@@ -1,0 +1,10 @@
+# ignore objs
+*.o
+# ignore map
+*.map
+# ignore tmp
+*~
+
+
+
+ 

@@ -48,7 +48,7 @@ void set_uart_mux_conf(void)
 
 void uart_init(void)
 {
-#include "ns16550.h"
+#include <serial/ns16550.h>
         struct ns16550 *com_port = (struct ns16550 *)0x44e09000;
         int baud_divisor = 26;
 
