@@ -26,9 +26,9 @@ cpu_init_cp15:
          * Invalidate L1 I/D
          */
         mov     r0, #0                  @ set up for MCR
-        mcr     p15, 0, r0, c8, c7, 0   @ invalidate TLBs
-        mcr     p15, 0, r0, c7, c5, 0   @ invalidate icache
-        mcr     p15, 0, r0, c7, c5, 6   @ invalidate BP array
+        mcr     p15, 0, r0, c8, c7, 0   @ invalidate TLBs	p15(co_processor number) c8(TLB operations)   c7, 0 (invalidate TLBs)
+        mcr     p15, 0, r0, c7, c5, 0   @ invalidate icache	p15(co_processor number) c7(cache operations) c5, 0 (invalidate icache)
+        mcr     p15, 0, r0, c7, c5, 6   @ invalidate BP array	p15(co_processor number) c7(cache operations) c5, 6 (invalidate BP array)
         mcr     p15, 0, r0, c7, c10, 4  @ DSB
         mcr     p15, 0, r0, c7, c5, 4   @ ISB
 
