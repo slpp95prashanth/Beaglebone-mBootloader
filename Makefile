@@ -7,7 +7,7 @@ CC:=$(CROSS_COMPILE)gcc
 LD:=$(CROSS_COMPILE)ld.bfd
 OBJCOPY:=$(CROSS_COMPILE)objcopy
 
-CFLAGS:=$(INCDIR) -fno-builtin
+CFLAGS:=-g $(INCDIR)
 
 # Include Directory
 INCDIR:= -I arch/$(ARCH)/include/ -I . -I include/ -I drivers/include 
