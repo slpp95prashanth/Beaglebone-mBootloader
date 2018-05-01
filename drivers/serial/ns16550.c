@@ -24,7 +24,7 @@ char NS16550_getc(void)
 
 void do_check_uart(void)
 {
-    char ch = 'w', *str = (char *)0x402f2fff;
+    char ch = 'w', *str = 0x402f2fff;
     struct ns16550 *com_port = (struct ns16550 *)0x44e09000;
 
     NS16550_putc('\r');
