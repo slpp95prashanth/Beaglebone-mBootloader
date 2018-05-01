@@ -5,7 +5,7 @@ lowlevel_init:
         /*
          * Setup a temporary stack
          */
-        ldr     sp, =0x4030E000
+        ldr     sp, =0x402f1fff
         bic     sp, sp, #7 /* 8-byte alignment for ABI compliance */
 
         /*

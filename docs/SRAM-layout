@@ -1,0 +1,10 @@
+SRAM info:
+=========
+	+ SRAM start_addr 0x402f0400
+	+ SRAM size	  62KB
+
+SRAM layout:
+===========
+	+ MLO 0x402f0400 size 0x57c
+	+ sp  0x402f1fff
+ 
