@@ -2,15 +2,18 @@ ARCH:=arm
 BOARD:=ti
 SOC:=am33xx
 CROSS_COMPILE:=arm-linux-gnueabi-
-
+include .config
 CC:=$(CROSS_COMPILE)gcc
 LD:=$(CROSS_COMPILE)ld.bfd
 OBJCOPY:=$(CROSS_COMPILE)objcopy
 
+CFLAGS:=$(INCDIR) -fno-builtin
+
+# Include Directory
 INCDIR:= -I arch/$(ARCH)/include/ -I . -I include/ -I drivers/include 
 
+# GNU Linker
 LDFLAGS:=--gc-sections -Bstatic
-CFLAGS:=-g $(INCDIR)
 
 # Entry Address
 EADDR:=0x402F0400
@@ -25,7 +28,7 @@ mBOOT_REPOSITORY = $(shell pwd)
 
 DIR:=$(mBOOT_REPOSITORY)
 
-FILES:=board/ti/am33xx/board.c drivers/serial/ns16550.c
+#FILES+=board/ti/am33xx/board.c drivers/serial/ns16550.c
 
 OBJS:=$(patsubst %.c,%.o,$(FILES))
 
@@ -35,7 +38,7 @@ OBJS:=$(patsubst %.c,%.o,$(FILES))
 #	echo ${OBJS}
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCDIR)-c $< -o $@
 
 MLO: ${OBJS}
 	$(LD) -T $(LDS) $(LDFLAGS) -Ttext $(EADDR) $(OBJS) -L $(LIBS_PATH) $(LIBS) -Map u-boot-spl.map -o u-boot-spl
@@ -51,4 +54,4 @@ clean:
 cleanall:
 	-rm ${OBJS}
 	-rm *.o *~
-	-rm MLO u-boot-spl u-boot-spl.bin u-boot-spl.map
+	rm MLO u-boot-spl u-boot-spl.bin u-boot-spl.map
