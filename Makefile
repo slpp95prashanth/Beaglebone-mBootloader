@@ -19,7 +19,7 @@ LDFLAGS:=--gc-sections -Bstatic
 EADDR:=0x402F0400
 
 # Linker Script
-LDS:=arch/$(ARCH)/$(BOARD)/$(SOC)/lds/u-boot-spl.lds
+LDS:=arch/$(ARCH)/$(BOARD)/$(SOC)/lds/m-boot-spl.lds
 
 LIBS_PATH:=/usr/lib/gcc-cross/$(CROSS_COMPILE:-=)/4.7
 LIBS:=-lgcc
