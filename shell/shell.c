@@ -1,6 +1,8 @@
 #include<lib/io.h>
 #include<cmd.h>
 
+#ifdef SHELL
+
 int do_regdump(void)
 {
     puts("do_regdump\n");
@@ -29,9 +31,7 @@ int shell_start(void)
     return 0;
 }
 
-
-
-
+#endif /* SHELL */
 
 
  

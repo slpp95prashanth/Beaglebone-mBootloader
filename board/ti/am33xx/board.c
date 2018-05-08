@@ -12,6 +12,8 @@ static void watchdog_disable(void)
                 ;
 }
 
+#ifdef SERIAL_UART
+
 #define CTRL_BASE                       0x44E10000
 
 void uart_soft_reset(void)
@@ -43,6 +45,8 @@ void set_uart_mux_conf(void)
     writel(0, CTRL_BASE + 2420);
 }
 
+#endif /* SERIAL_UART */
+
 void early_system_init(void)
 {
         /*
@@ -51,16 +55,22 @@ void early_system_init(void)
          * the NOR mux in this space in order to continue.
          */
     watchdog_disable();
+#ifdef SERIAL_UART
     uart_clock_enable();
     set_uart_mux_conf();
 
     uart_soft_reset();
     uart_init();
 
+#ifdef SERIAL_DEBUG_CONSOLE
     do_check_uart();
+#endif
 
+#endif /* SERIAL_UART */
+
+#ifdef SHELL
     shell_start();
-
+#endif
     return;
 }
 

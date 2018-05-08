@@ -2,12 +2,14 @@ ARCH:=arm
 BOARD:=ti
 SOC:=am33xx
 CROSS_COMPILE:=arm-linux-gnueabi-
+
 include .config
+
 CC:=$(CROSS_COMPILE)gcc
 LD:=$(CROSS_COMPILE)ld.bfd
 OBJCOPY:=$(CROSS_COMPILE)objcopy
 
-CFLAGS:=$(INCDIR) -fno-builtin -fno-stack-protector -Wall
+CFLAGS+=$(INCDIR) -fno-builtin -fno-stack-protector -Wall
 
 # GNU Linker
 LDFLAGS:=--gc-sections -Bstatic
