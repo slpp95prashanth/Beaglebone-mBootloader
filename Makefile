@@ -7,10 +7,7 @@ CC:=$(CROSS_COMPILE)gcc
 LD:=$(CROSS_COMPILE)ld.bfd
 OBJCOPY:=$(CROSS_COMPILE)objcopy
 
-CFLAGS:=-g $(INCDIR)
-
-# Include Directory
-INCDIR:= -I arch/$(ARCH)/include/ -I . -I include/ -I drivers/include 
+CFLAGS:=$(INCDIR) -fno-builtin -fno-stack-protector -Wall
 
 # GNU Linker
 LDFLAGS:=--gc-sections -Bstatic
@@ -31,6 +28,7 @@ DIR:=$(mBOOT_REPOSITORY)
 #FILES+=board/ti/am33xx/board.c drivers/serial/ns16550.c
 
 OBJS:=$(patsubst %.c,%.o,$(FILES))
+OBJS:=$(patsubst %.S,%.o,$(OBJS))
 
 #$(OBJS):%.o:%.c
 #	$(CC) $(CFLAGS) -c $< -o $@

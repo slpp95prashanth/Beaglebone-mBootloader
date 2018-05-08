@@ -9,6 +9,7 @@ SECTIONS
   {
   _start = .;
   arch/arm/cpu/armv7/start.o (.text)
+  arch/arm/cpu/armv7/lib.o (.text)
     *(.text) *(.rodata*)
   } >.sram
  . = ALIGN(4);
