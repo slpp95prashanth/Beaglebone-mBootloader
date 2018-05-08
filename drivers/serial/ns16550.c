@@ -2,6 +2,8 @@
 #include<asm/types.h>
 #include<asm/io.h>
 
+#ifdef SERIAL_UART
+
 void NS16550_putc(char c)
 {
         struct ns16550 *com_port = (struct ns16550 *)0x44e09000;
@@ -21,6 +23,7 @@ char NS16550_getc(void)
 
         return readb(&com_port->rbr);
 }
+#ifdef SERIAL_DEBUG_CONSOLE
 
 void do_check_uart(void)
 {
@@ -65,6 +68,8 @@ void do_check_uart(void)
     NS16550_putc('\n');
 }
 
+#endif /* SERIAL_DEBUG_CONSOLE */
+
 void uart_init(void)
 {
         struct ns16550 *com_port = (struct ns16550 *)0x44e09000;
@@ -85,5 +90,5 @@ void uart_init(void)
         writeb(0, &com_port->mdr1);
 }
 
+#endif /* SERIAL_UART */
 
- 
