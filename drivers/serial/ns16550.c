@@ -24,8 +24,10 @@ char NS16550_getc(void)
 
 void do_check_uart(void)
 {
-    char ch = 'w', *str = 0x402f2fff;
+    char ch = 'w', str[120];
     struct ns16550 *com_port = (struct ns16550 *)0x44e09000;
+
+    int i;
 
     NS16550_putc('\r');
     NS16550_putc('\n');
@@ -34,18 +36,33 @@ void do_check_uart(void)
     NS16550_putc('\r');
     NS16550_putc('\n');
 
-//    ch = NS16550_getc();
-//    NS16550_putc(ch);
+    puts("\t\t\tGES\n");
 
-    while(1) {
-	puts("\t\t\tGES\n");
-	gets(str);
-	puts(str);
-        NS16550_putc('\r');
-        NS16550_putc('\n');
+    NS16550_putc('\r');
+    NS16550_putc('\n');
+
+    puts(str);
+
+    NS16550_putc('\r');
+    NS16550_putc('\n');
+
+    memset(str, 'w', 21);
+
+    puts(str);
+
+    memset(str, 'w', 70);
+
+    puts(str);
+
+    NS16550_putc('\r');
+    NS16550_putc('\n');
+
+    for (i = 0 ; i < 70 ; i++) {
+	putc(str[(i)]);
     }
-//	NS16550_putc('1');
-//	NS16550_putc('2');
+
+    NS16550_putc('\r');
+    NS16550_putc('\n');
 }
 
 void uart_init(void)

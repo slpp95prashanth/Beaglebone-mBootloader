@@ -59,6 +59,8 @@ void early_system_init(void)
 
     do_check_uart();
 
+    shell_start();
+
     return;
 }
 
