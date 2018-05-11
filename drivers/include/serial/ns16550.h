@@ -1,3 +1,15 @@
+#define AM335X_SERIAL_UART0 0x44e09000
+
+#define AM33XX_SERIAL_UART_SYSCON	0x54
+#define AM33XX_SERIAL_UART_SYSSTATS 	0x58
+
+#define AM335X_SERIAL_UART0_SYSCON 	(AM335X_SERIAL_UART0 + AM33XX_SERIAL_UART_SYSCON)
+#define AM335X_SERIAL_UART0_SYSSTATS 	(AM335X_SERIAL_UART0 + AM33XX_SERIAL_UART_SYSSTATS)
+
+#define UART_RESET              (0x1 << 1)
+#define UART_CLK_RUNNING_MASK   0x1
+#define UART_SMART_IDLE_EN      (0x1 << 0x3)
+
 #define UART_FCR_FIFO_EN        0x01 /* Fifo enable */
 #define UART_FCR_TRIGGER_MASK   0xC0 /* Mask for the FIFO trigger range */
 #define UART_FCR_TRIGGER_1      0x00 /* Mask for trigger set at 1 */

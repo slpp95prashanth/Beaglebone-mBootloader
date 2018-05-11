@@ -38,7 +38,7 @@ OBJS:=$(patsubst %.S,%.o,$(OBJS))
 #	echo ${OBJS}
 
 %.o: %.c
-	$(CC) $(CFLAGS) $(INCDIR)-c $< -o $@
+	$(CC) $(CFLAGS) $(INCDIR) -c $< -o $@
 
 MLO: ${OBJS}
 	$(LD) -T $(LDS) $(LDFLAGS) -Ttext $(EADDR) $(OBJS) -L $(LIBS_PATH) $(LIBS) -Map u-boot-spl.map -o u-boot-spl

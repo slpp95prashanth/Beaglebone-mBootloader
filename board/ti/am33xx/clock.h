@@ -1,0 +1,6 @@
+#define AM335X_CLK_WKUP_BASE    0x44E00400
+
+#define AM335X_CLK_WKUP_UART0   (AM335X_CLK_WKUP_BASE + 0xb4)
+
+#define PRCM_MOD_EN             0x2
+

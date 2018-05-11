@@ -28,6 +28,7 @@ int shell_start(void)
 	    memset(cmd, '\0', MAX_CMD_LEN);
     }
 
+    /* control does not reach here */
     return 0;
 }
 
