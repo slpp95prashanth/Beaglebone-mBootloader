@@ -6,7 +6,7 @@
 
 void NS16550_putc(char c)
 {
-        struct ns16550 *com_port = (struct ns16550 *)0x44e09000;
+        struct ns16550 *com_port = (struct ns16550 *)AM335X_SERIAL_UART0;
 	
         while ((readb(&com_port->lsr) & UART_LSR_THRE) == 0)
                 ;
@@ -17,7 +17,7 @@ void NS16550_putc(char c)
 
 char NS16550_getc(void)
 {
-        struct ns16550 *com_port = (struct ns16550 *)0x44e09000;
+        struct ns16550 *com_port = (struct ns16550 *)AM335X_SERIAL_UART0;
 
         while ((readb(&com_port->lsr) & UART_LSR_DR) == 0);
 
@@ -28,7 +28,7 @@ char NS16550_getc(void)
 void do_check_uart(void)
 {
     char ch = 'w', str[120];
-    struct ns16550 *com_port = (struct ns16550 *)0x44e09000;
+    struct ns16550 *com_port = (struct ns16550 *)AM335X_SERIAL_UART0;
 
     int i;
 
@@ -72,7 +72,7 @@ void do_check_uart(void)
 
 void uart_init(void)
 {
-        struct ns16550 *com_port = (struct ns16550 *)0x44e09000;
+        struct ns16550 *com_port = (struct ns16550 *)AM335X_SERIAL_UART0;
         int baud_divisor = 26;
 
         writeb(CONFIG_SYS_NS16550_IER, &com_port->ier);
