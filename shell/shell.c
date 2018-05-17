@@ -1,5 +1,6 @@
 #include<lib/io.h>
 #include<cmd.h>
+#include<lib/string.h>
 
 #ifdef SHELL
 
@@ -9,7 +10,7 @@ int do_regdump(void)
     return 0;
 }
 
-int shell_start(void)
+void shell_start(void)
 {
     char cmd[MAX_CMD_LEN];
     int ret = -1;
@@ -29,7 +30,7 @@ int shell_start(void)
     }
 
     /* control does not reach here */
-    return 0;
+    return;
 }
 
 #endif /* SHELL */
