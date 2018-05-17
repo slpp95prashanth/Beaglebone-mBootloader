@@ -1,6 +1,8 @@
 #include<asm/io.h>
-#include<serial/ns16550.h>
 #include<wdt.h>
+#include<serial/ns16550.h>
+#include<serial/uart.h>
+#include<cmd.h>
 
 #include"clock.h"
 #include"ctrl-module.h"
@@ -64,7 +66,7 @@ void early_system_init(void)
     set_uart_mux_conf();
 
     uart_soft_reset();
-    uart_init();
+    uart_console_init();
 
 #ifdef SERIAL_DEBUG_CONSOLE
     do_check_uart();

@@ -1,5 +1,7 @@
 #define AM335X_SERIAL_UART0 0x44e09000
 
+#define NS16550_BASE(port) (AM335X_SERIAL_UART##port)
+
 #define AM33XX_SERIAL_UART_SYSCON	0x54
 #define AM33XX_SERIAL_UART_SYSSTATS 	0x58
 
@@ -103,4 +105,6 @@ struct ns16550 {
 #define dll rbr
 #define dlm ier
 
+void NS16550_putc(char);
+char NS16550_getc(void);
 

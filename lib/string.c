@@ -1,3 +1,5 @@
+#include<lib/string.h>
+
 int strlen(char *str)
 {
     int count;

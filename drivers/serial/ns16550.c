@@ -1,4 +1,5 @@
 #include<serial/ns16550.h>
+#include<serial/uart.h>
 #include<asm/types.h>
 #include<asm/io.h>
 
@@ -70,10 +71,13 @@ void do_check_uart(void)
 
 #endif /* SERIAL_DEBUG_CONSOLE */
 
-void uart_init(void)
+int uart_dev_init(struct uart *uart)
 {
-        struct ns16550 *com_port = (struct ns16550 *)AM335X_SERIAL_UART0;
-        int baud_divisor = 26;
+#define UART_SYS_FREQ 48000000
+#define BAUD_MULTIPLIER 16
+
+        struct ns16550 *com_port = (struct ns16550 *)NS16550_BASE(0);
+        int baud_divisor = (UART_SYS_FREQ / (BAUD_MULTIPLIER * (115200)));
 
         writeb(CONFIG_SYS_NS16550_IER, &com_port->ier);
         writeb(0x7, &com_port->mdr1);   /* mode select reset TL16C750*/
@@ -88,6 +92,8 @@ void uart_init(void)
         writeb((baud_divisor >> 8) & 0xff, &com_port->dlm);
         writeb(UART_LCRVAL, &com_port->lcr);
         writeb(0, &com_port->mdr1);
+
+    return 0;
 }
 
 #endif /* SERIAL_UART */

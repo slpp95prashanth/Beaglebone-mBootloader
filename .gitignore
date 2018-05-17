@@ -4,7 +4,8 @@
 *.map
 # ignore tmp
 *~
-
-
-
- 
+mUART
+tmp/
+make_images.sh
+a.out
+tags 

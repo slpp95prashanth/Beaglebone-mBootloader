@@ -9,10 +9,10 @@ CC:=$(CROSS_COMPILE)gcc
 LD:=$(CROSS_COMPILE)ld.bfd
 OBJCOPY:=$(CROSS_COMPILE)objcopy
 
-CFLAGS+=$(INCDIR) -fno-builtin -fno-stack-protector -Wall
+CFLAGS+=$(INCDIR) -fno-builtin -fno-stack-protector -Wall -nostdinc
 
 # GNU Linker
-LDFLAGS:=--gc-sections -Bstatic
+LDFLAGS:=-Bstatic -nostartfiles
 
 # Entry Address
 EADDR:=0x402F0400
@@ -20,8 +20,8 @@ EADDR:=0x402F0400
 # Linker Script
 LDS:=arch/$(ARCH)/$(BOARD)/$(SOC)/lds/m-boot-spl.lds
 
-LIBS_PATH:=/usr/lib/gcc-cross/$(CROSS_COMPILE:-=)/4.7
-LIBS:=-lgcc
+#LIBS_PATH:= -L /usr/lib/gcc-cross/$(CROSS_COMPILE:-=)/4.7
+#LIBS:=-lgcc
 
 mBOOT_REPOSITORY = $(shell pwd)
 
@@ -41,7 +41,7 @@ OBJS:=$(patsubst %.S,%.o,$(OBJS))
 	$(CC) $(CFLAGS) $(INCDIR) -c $< -o $@
 
 MLO: ${OBJS}
-	$(LD) -T $(LDS) $(LDFLAGS) -Ttext $(EADDR) $(OBJS) -L $(LIBS_PATH) $(LIBS) -Map u-boot-spl.map -o u-boot-spl
+	$(LD) -T $(LDS) $(LDFLAGS) -Ttext $(EADDR) $(OBJS) $(LIBS_PATH) $(LIBS) -Map u-boot-spl.map -o u-boot-spl
 	$(OBJCOPY) --gap-fill=0xff -O binary u-boot-spl u-boot-spl.bin
 	$(DIR)/tools/mkimage -T omapimage -a $(EADDR) -d u-boot-spl.bin MLO
 	
@@ -49,9 +49,13 @@ all: MLO
 
 clean:
 	-rm *.o
-	-rm *~
+	-rm *~ .*~
+	-rm $(addsuffix *~,$(dir $(FILES)))
+	-rm $(addsuffix *~,$(dir $(INCDIR)))
 
 cleanall:
 	-rm ${OBJS}
-	-rm *.o *~
+	-rm $(addsuffix *~,$(dir $(FILES)))
+	-rm $(addsuffix *~,$(dir $(INCDIR)))
+	-rm *.o *~ .*~
 	rm MLO u-boot-spl u-boot-spl.bin u-boot-spl.map
