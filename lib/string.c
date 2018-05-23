@@ -1,6 +1,6 @@
 #include<lib/string.h>
 
-int strlen(char *str)
+int strlen(const char *str)
 {
     int count;
 
@@ -9,7 +9,21 @@ int strlen(char *str)
     return count;
 }
 
-int strcmp(char *str1, char *str2)
+char *strncpy(char *dest, const char *src, int count)
+{
+    char *tmp = dest;
+
+    while (count) {
+	if ((*tmp = *src) != 0)
+	    src++;
+	    tmp++;
+	    count--;
+	}
+
+    return dest;
+}
+
+int strcmp(const char *str1, const char *str2)
 {
     while (*str1 && *str2) {
 	if (*str1 > *str2)
@@ -20,6 +34,39 @@ int strcmp(char *str1, char *str2)
     }
 
     return 0;
+}
+
+int inttostr(int num, char *str, int type)
+{
+    int rem, i;
+    int count;
+
+    char str1[120];
+
+    i = 119;
+
+    str1[i--] = '\0';
+    
+    if (type == 16) {
+        while (num) {
+            rem = num % 16;
+            num = num / 16;
+ 
+            if (rem >= 0 && rem <= 9) {
+                str1[i--] = '0' + rem;
+            } else if (rem >= 10 && rem <= 15) {
+                str1[i--] = 'a' + rem - 10;
+            } else {
+                return -1;
+            }
+
+	count++;
+
+        }
+    }
+
+    strncpy(str, str1 + i + 1, count);
+    return count;
 }
 
 void memset(char *str, char ch, int size)
