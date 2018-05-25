@@ -1,3 +1,4 @@
+#include<serial/uart.h>
 #include<serial/ns16550.h>
 
 char getc(void)

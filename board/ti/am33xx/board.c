@@ -61,6 +61,7 @@ void early_system_init(void)
          * the NOR mux in this space in order to continue.
          */
     watchdog_disable();
+
 #ifdef SERIAL_UART
     uart_clock_enable();
     set_uart_mux_conf();
