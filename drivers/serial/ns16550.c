@@ -93,6 +93,9 @@ int uart_dev_init(struct uart *uart)
         writeb(UART_LCRVAL, &com_port->lcr);
         writeb(0, &com_port->mdr1);
 
+//    uart->putc = NS16550_putc;
+//    uart->getc = NS16550_getc;
+
     return 0;
 }
 

@@ -14,7 +14,7 @@ char *strncpy(char *dest, const char *src, int count)
     char *tmp = dest;
 
     while (count) {
-	if ((*tmp = *src) != 0)
+	if ((*tmp = *src) != '\0');
 	    src++;
 	    tmp++;
 	    count--;
@@ -23,14 +23,17 @@ char *strncpy(char *dest, const char *src, int count)
     return dest;
 }
 
-int strcmp(const char *str1, const char *str2)
+int strncmp(const char *str1, const char *str2, int count)
 {
-    while (*str1 && *str2) {
+    while (count && *str1 && *str2) {
 	if (*str1 > *str2)
 	    return 1;
 	else if (*str1 < *str2)
 	    return -1;
+
 	str1++, str2++;
+
+	count--;
     }
 
     return 0;
@@ -41,9 +44,10 @@ int inttostr(int num, char *str, int type)
     int rem, i;
     int count;
 
-    char str1[120];
+    char str1[12];
 
-    i = 119;
+    i = 11;
+    count = 0;
 
     str1[i--] = '\0';
     

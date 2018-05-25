@@ -47,8 +47,10 @@ LDMIA_LOOP:
     POP {r3 - r6}
     mov pc, lr
 
-
-
+.globl asm_getregs
+asm_getregs:
+    stmia r0, {r0 - r15}
+    mov pc, lr
 
 
 
