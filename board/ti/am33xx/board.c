@@ -45,12 +45,6 @@ void uart_clock_enable(void)
            ;
 }
 
-void set_uart_mux_conf(void)
-{
-    writel(MODE(0) | PULLUP_EN | RXACTIVE, AM335X_CTRL_CONF_UART0_RXD);
-    writel(MODE(0) | PULLUDEN, AM335X_CTRL_CONF_UART0_TXD);
-}
-
 #endif /* SERIAL_UART */
 
 void early_system_init(void)
@@ -62,9 +56,9 @@ void early_system_init(void)
          */
     watchdog_disable();
 
+    config_ctrl_module();
 #ifdef SERIAL_UART
     uart_clock_enable();
-    set_uart_mux_conf();
 
     uart_soft_reset();
     uart_console_init();

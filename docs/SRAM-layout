@@ -1,10 +1,10 @@
 SRAM info:
 =========
-	+ SRAM start_addr 0x402f0400
+	+ SRAM addr (0x402f_0400 - 0x402f_ffff)
 	+ SRAM size	  62KB
 
 SRAM layout:
 ===========
-	+ MLO 0x402f0400 size 0x57c
-	+ sp  0x402f1fff
+	+ MLO 0x402f_0400 size 0x57c
+	+ sp  0x402f_1fff (down growing stack)
  

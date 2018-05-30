@@ -10,6 +10,6 @@
 #define PULLUDDIS       (0x1 << 3) /* Pull up disabled */
 #define MODE(val)       val     /* used for Readability */
 
-
+void config_ctrl_module(void);
 
  
