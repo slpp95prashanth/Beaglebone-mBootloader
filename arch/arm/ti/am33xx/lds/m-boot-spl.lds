@@ -13,8 +13,16 @@ SECTIONS
     *(.text) *(.rodata*)
   } >.sram
  . = ALIGN(4);
+ .bss :
+  {
+    __bss_start = .;
+    *(.bss*)
+    . = ALIGN(4);
+    __bss_end__ = .;
+  } >.sram
+ . = ALIGN(4);
  .data :
   {
     *(.data*)
-  }
+  } >.sram
 }
