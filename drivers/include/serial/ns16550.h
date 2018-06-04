@@ -1,3 +1,6 @@
+#ifndef _SERIAL_NS16550_H
+#define _SERIAL_NS16550_H
+
 #define AM335X_SERIAL_UART0 0x44e09000
 
 #define NS16550_BASE(port) (AM335X_SERIAL_UART##port)
@@ -108,3 +111,4 @@ struct ns16550 {
 void NS16550_putc(char);
 char NS16550_getc(void);
 
+#endif /* _SERIAL_UART_H */

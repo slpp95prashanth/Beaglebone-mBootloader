@@ -1,3 +1,6 @@
+#ifndef _SERIAL_UART_H
+#define _SERIAL_UART_H
+
 #include<asm/types.h>
 
 #define CONSOLE_UART_PORT 0
@@ -17,3 +20,4 @@ struct uart {
 int uart_console_init(void);
 int uart_dev_init(struct uart *);
 
+#endif /* _SERIAL_UART_H */
