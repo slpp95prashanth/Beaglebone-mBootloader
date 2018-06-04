@@ -1,3 +1,4 @@
+#define NULL (void *)0
 char getc(void);
 void putc(char );
 void gets(char *);

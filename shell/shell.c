@@ -2,6 +2,7 @@
 #include<cmd.h>
 #include<lib/string.h>
 #include<asm/types.h>
+#include<stdio.h>
 
 struct regs {
     uint32_t r0;
@@ -58,23 +59,60 @@ puts("\n");			\
     print_regs(ptregs.r14, str);
     print_regs(ptregs.r15, str);
 
-    puts("do_regdump\n");
     return 0;
 }
 
 #endif /* SHELL_REGDUMP */
 
+#ifdef SHELL_MD
+
+int do_md(int argc, char **argv)
+{
+    char str[120] = {};
+
+    inttostr(argc, str, 16);
+
+    puts(str);
+    putc('\n');
+
+    while (argc > 0) {
+        argc--;
+        puts(argv[(argc)]);
+	putc('\n');
+    }
+
+    return 0;
+}
+
+#endif /* SHELL_MD */
+
 void shell_start(void)
 {
-    char cmd[MAX_CMD_LEN];
-    int ret = -1;
+    char cmd[MAX_CMD_LEN], *argv[MAX_CMD_ARGS];
+    int ret, argc;
+
+    ret = -1;
 
     while (1) {
 	puts("mBoot> ");
 	gets(cmd);
 
+	argc = 0;
+
+	argv[argc] = strtok(cmd, " ");
+
+	while (argv[argc] != (NULL))
+	    argv[++argc] = strtok (NULL, " ");
+
 	if (CMD_CMP(cmd, "regdump") == (0)) {
-	   ret = do_regdump();
+#ifdef SHELL_REGDUMP
+	   ret = do_regdump ();
+#endif /* SHELL_REGDUMP */
+
+	} else if (CMD_CMP(cmd, "md") == (0)) {
+#ifdef SHELL_MD
+	   ret = do_md (argc, argv);
+#endif /* SHELL_MD */
 	} else {
 	    puts("unknown command\n");
 	}

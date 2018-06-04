@@ -9,10 +9,10 @@ CC:=$(CROSS_COMPILE)gcc
 LD:=$(CROSS_COMPILE)ld.bfd
 OBJCOPY:=$(CROSS_COMPILE)objcopy
 
-CFLAGS+=$(INCDIR) -fno-builtin -fno-stack-protector -Wall -nostdinc
+CFLAGS+=$(INCDIR) -fno-builtin -fno-stack-protector -Wall -nostdinc -Os -g
 
 # GNU Linker
-LDFLAGS:=-Bstatic -nostartfiles
+LDFLAGS:=-Bstatic -nostartfiles -nostdlib
 
 # Entry Address
 EADDR:=0x402F0400
@@ -35,7 +35,6 @@ OBJS:=$(patsubst %.S,%.o,$(OBJS))
 #$(OBJS):%.o:%.c
 #	$(CC) $(CFLAGS) -c $< -o $@
 #	$(CC) $(CFLAGS) -c $(FILES) -o $<
-#	echo ${OBJS}
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCDIR) -c $< -o $@
