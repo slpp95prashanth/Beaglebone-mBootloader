@@ -69,6 +69,11 @@ void early_system_init(void)
 
 #endif /* SERIAL_UART */
 
+#ifdef DEBUG_PRINTF
+extern void (*tmp_putc1)(int *, char);
+    init_printf(&tmp_putc1, 0);
+#endif /* DEBUG_PRINTF */
+
 #ifdef SHELL
     shell_start();
 #endif

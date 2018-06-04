@@ -12,6 +12,7 @@ size_t strspn(const char *, const char *);
 char *strtok(char *str, const char *delim);
 char *strpbrk(const char *s, const char *accept);
 char *strchr(const char *s, int c);
+unsigned long int simple_strtoul(const char *nptr, char **endptr, int base);
 
 void asm_memset(void *, char, int);
 void memset(char *, char, int);

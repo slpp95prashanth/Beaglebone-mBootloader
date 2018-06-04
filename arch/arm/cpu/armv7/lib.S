@@ -52,6 +52,31 @@ asm_getregs:
     stmia r0, {r0 - r15}
     mov pc, lr
 
+# Entry  r0: numerator (lo) must be signed positive
+#        r2: deniminator (den) must be non-zero and signed negative
+.globl idiv
+idiv:
+        lo .req r0; hi .req r1; den .req r2
+        mov hi, #0 ;@ hi = 0
+        adds lo, lo, lo
+        .rept 32 ;# repeat 32 times
+          adcs hi, den, hi, lsl #1
+          subcc hi, hi, den
+          adcs lo, lo, lo
+        .endr
+        mov pc, lr ;#return
+# Exit   r0: quotient (lo)
+#        r1: remainder (hi)
 
-
- 
+.globl imod
+imod:
+        lo .req r0; hi .req r1; den .req r2
+        mov hi, #0 ;@ hi = 0
+        adds lo, lo, lo
+        .rept 32 ;# repeat 32 times
+          adcs hi, den, hi, lsl #1
+          subcc hi, hi, den
+          adcs lo, lo, lo
+        .endr
+	mov r0, r1
+        mov pc, lr ;#return

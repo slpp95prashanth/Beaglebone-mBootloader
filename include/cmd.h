@@ -1,3 +1,6 @@
+#ifndef _CMD_H
+#define _CMD_H
+
 #define MAX_CMD_LEN 30
 #define MAX_CMD_ARGS 6
 
@@ -9,4 +12,4 @@ void shell_start(void);
 
 
 
- 
+#endif /* _CMD_H */ 

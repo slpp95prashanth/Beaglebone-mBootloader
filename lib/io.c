@@ -17,11 +17,21 @@ void putc(char ch)
     return ;
 }
 
+#ifdef DEBUG_PRINTF
+
+void tmp_putc1(int *dummy, char ch)
+{
+    putc(ch);
+    return ;
+}
+
+#endif /* DEBUG_PRINTF */
+
 void gets(char *str)
 {
     do {
 	*str = NS16550_getc();
-        NS16550_putc(*str);
+        NS16550_putc(* str);
     } while (*str++ != '\r');
 
     *--str = '\0';

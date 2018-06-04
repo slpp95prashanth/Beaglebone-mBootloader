@@ -39,7 +39,7 @@ OBJS:=$(patsubst %.S,%.o,$(OBJS))
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCDIR) -c $< -o $@
 
-MLO: ${OBJS}
+MLO: ${OBJS} .config
 	$(LD) -T $(LDS) $(LDFLAGS) -Ttext $(EADDR) $(OBJS) $(LIBS_PATH) $(LIBS) -Map u-boot-spl.map -o u-boot-spl
 	$(OBJCOPY) --gap-fill=0xff -O binary u-boot-spl u-boot-spl.bin
 	$(DIR)/tools/mkimage -T omapimage -a $(EADDR) -d u-boot-spl.bin MLO
