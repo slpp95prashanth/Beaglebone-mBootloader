@@ -1,3 +1,6 @@
+#ifndef _AM335X_CTRL_H
+#define _AM335X_CTRL_H
+
 #define AM335X_CTRL_BASE 0x44e10000
 
 #define AM335X_CTRL_CONF_UART0_RXD	(AM335X_CTRL_BASE + 0x970)
@@ -12,4 +15,4 @@
 
 void config_ctrl_module(void);
 
- 
+#endif /* _AM335X_CTRL_H */ 

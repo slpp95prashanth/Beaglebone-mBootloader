@@ -1,5 +1,5 @@
-#ifndef _LIB_STRING_
-#define _LIB_STRING_
+#ifndef _LIB_STRING_H
+#define _LIB_STRING_H
 
 #include <stdio.h>
 #include <asm/types.h>
@@ -17,4 +17,4 @@ unsigned long int simple_strtoul(const char *nptr, char **endptr, int base);
 void asm_memset(void *, char, int);
 void memset(char *, char, int);
 
-#endif /* _LIB_STRING_ */
+#endif /* _LIB_STRING_H */

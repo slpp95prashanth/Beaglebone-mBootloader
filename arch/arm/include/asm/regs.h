@@ -1,3 +1,6 @@
+#ifndef _ASM_REGS_H
+#define _ASM_REGS_H
+
 #include <asm/types.h>
 
 struct regs {
@@ -20,3 +23,5 @@ struct regs {
 };
 
 void asm_getregs(struct regs *);
+
+#endif /* _ASM_REGS_H */
