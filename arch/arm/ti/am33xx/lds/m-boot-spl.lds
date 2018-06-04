@@ -12,7 +12,9 @@ SECTIONS
   arch/arm/cpu/armv7/lib.o (.text)
     *(.text) *(.rodata*)
   } >.sram
+
  . = ALIGN(4);
+
  .bss :
   {
     __bss_start = .;
@@ -20,7 +22,9 @@ SECTIONS
     . = ALIGN(4);
     __bss_end__ = .;
   } >.sram
+
  . = ALIGN(4);
+
  .data :
   {
     *(.data*)
