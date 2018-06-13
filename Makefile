@@ -9,7 +9,11 @@ CC:=$(CROSS_COMPILE)gcc
 LD:=$(CROSS_COMPILE)ld.bfd
 OBJCOPY:=$(CROSS_COMPILE)objcopy
 
-CFLAGS+=$(INCDIR) -fno-builtin -fno-stack-protector -Wall -nostdinc -Os -g
+CFLAGS+= -fno-builtin -fno-stack-protector -Wall -nostdinc -Os
+
+ifeq ($(DEBUG), 1)
+CFLAGS+= -g
+endif
 
 # GNU Linker
 LDFLAGS:=-Bstatic -nostartfiles -nostdlib
@@ -37,6 +41,11 @@ OBJS:=$(patsubst %.S,%.o,$(OBJS))
 #	$(CC) $(CFLAGS) -c $(FILES) -o $<
 
 %.o: %.c
+	$(CC) $(CFLAGS) $(INCDIR) -c $< -o $@
+
+# To remove the Implicit rule
+
+%.o: %.S
 	$(CC) $(CFLAGS) $(INCDIR) -c $< -o $@
 
 MLO: ${OBJS} .config
