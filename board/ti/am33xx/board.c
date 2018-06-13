@@ -57,6 +57,7 @@ void early_system_init(void)
     watchdog_disable();
 
     config_ctrl_module();
+
 #ifdef SERIAL_UART
     uart_clock_enable();
 
@@ -69,6 +70,12 @@ void early_system_init(void)
 
 #endif /* SERIAL_UART */
 
+#ifdef EXCEPTION
+    asm_exception();
+#endif
+
+#ifdef SERIAL_UART
+
 #ifdef DEBUG_PRINTF
 extern void (*tmp_putc1)(int *, char);
     init_printf(&tmp_putc1, 0);
@@ -77,6 +84,8 @@ extern void (*tmp_putc1)(int *, char);
 #ifdef SHELL
     shell_start();
 #endif
+
+#endif /* SERIAL_UART */
     return;
 }
 
