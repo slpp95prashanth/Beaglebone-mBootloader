@@ -29,7 +29,7 @@
  * OF SUCH DAMAGE.
  */
 
-#include "printf.h"
+#include <lib/printf.h>
 #include <lib/io.h>
 
 extern unsigned int idiv(unsigned int, unsigned int);

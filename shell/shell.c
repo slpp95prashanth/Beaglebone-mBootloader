@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <asm/io.h>
 #include <asm/regs.h>
+#include <asm/prcm.h>
 
 #ifdef SHELL
 #ifdef SHELL_REGDUMP
@@ -141,6 +142,14 @@ void shell_start(void)
 		ret = do_mm(argv[1], argv[2]);
 	    }
 #endif /* SHELL_MD */
+	} else if (CMD_CMP(cmd, "reset") == (0)) {
+#ifdef SHELL_RESET
+	    if (argc == 2 && CMD_CMP(argv[1], "cold") == 0) {
+	    	reset_cpu(COLD_RESET);
+	    } else {
+	    	reset_cpu(WARM_RESET);
+	    }
+#endif /* SHELL_RESET */
 	} else {
 	    puts("unknown command\n");
 	}
