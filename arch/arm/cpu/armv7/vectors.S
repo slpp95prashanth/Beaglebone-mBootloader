@@ -1,4 +1,7 @@
 #ifdef EXCEPTION
+
+#define WARM_RESET 0x01
+
 .section "vectors", "ax"
 
 .align 4
@@ -7,63 +10,65 @@
 #EXP_STACK_START_IN:
 #        .word   0x402ff000			@ Exception-mode stack
 
-        .align 4
 undefined_instruction:
         ldr     r13, =EXP_STACK_START_IN         @ setup our mode stack
-	push	{lr}
+	push	{r0, lr}
         bl      do_regdump
-	pop	{lr}
+	ldr	r0, =WARM_RESET
+	bl	reset_cpu
+	pop	{r0, lr}
         mov pc, lr
 
-        .align 4
 software_interrupt:
         ldr     r13, =EXP_STACK_START_IN         @ setup our mode stack
-	push	{lr}
+	push	{r0, lr}
         bl      do_regdump
-	pop	{lr}
+	ldr	r0, =WARM_RESET
+	bl	reset_cpu
+	pop	{r0, lr}
         mov pc, lr
 
-        .align 4
 prefetch_abort:
         ldr     r13, =EXP_STACK_START_IN         @ setup our mode stack
-	push	{lr}
+	push	{r0, lr}
         bl      do_regdump
-	pop	{lr}
+	ldr	r0, =WARM_RESET
+	bl	reset_cpu
+	pop	{r0, lr}
         mov pc, lr
-
-        .align 4
 data_abort:
         ldr     r13, =EXP_STACK_START_IN         @ setup our mode stack
-	push	{lr}
+	push	{r0, lr}
         bl      do_regdump
-	pop	{lr}
-	subs pc, lr, #8
+	ldr	r0, =WARM_RESET
+	bl	reset_cpu
+	pop	{r0, lr}
         mov pc, lr
 
-        .align 4
 not_used:
         ldr     r13, =EXP_STACK_START_IN         @ setup our mode stack
-	push	{lr}
+	push	{r0, lr}
         bl      do_regdump
-	pop	{lr}
+	ldr	r0, =WARM_RESET
+	bl	reset_cpu
+	pop	{r0, lr}
         mov pc, lr
-
-        .align 4
 irq:
         ldr     r13, =EXP_STACK_START_IN         @ setup our mode stack
-	push	{lr}
+	push	{r0, lr}
         bl      do_regdump
-	pop	{lr}
+	ldr	r0, =WARM_RESET
+	bl	reset_cpu
+	pop	{r0, lr}
         mov pc, lr
-
-        .align 4
 fiq:
         ldr     r13, =EXP_STACK_START_IN         @ setup our mode stack
-	push	{lr}
-	bl	do_regdump
-	pop	{lr}
+	push	{r0, lr}
+        bl      do_regdump
+	ldr	r0, =WARM_RESET
+	bl	reset_cpu
+	pop	{r0, lr}
         mov pc, lr
-
 #define CR_V    (1 << 13)       /* Vectors relocated to 0xffff0000      */
 
 set_exception_vectors:

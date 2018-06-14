@@ -3,9 +3,11 @@
 #include<serial/ns16550.h>
 #include<serial/uart.h>
 #include<cmd.h>
-
+#include<stdio.h>
 #include"clock.h"
 #include"ctrl-module.h"
+
+extern void asm_exception(void);
 
 typedef unsigned int long ulong;
 
@@ -77,8 +79,9 @@ void early_system_init(void)
 #ifdef SERIAL_UART
 
 #ifdef DEBUG_PRINTF
-extern void (*tmp_putc1)(int *, char);
-    init_printf(&tmp_putc1, 0);
+extern void tmp_putc1(int *, char);
+void (*tmp_putc)(int *, char) = &tmp_putc1;
+    init_printf(tmp_putc, 0);
 #endif /* DEBUG_PRINTF */
 
 #ifdef SHELL
