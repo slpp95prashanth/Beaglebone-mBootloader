@@ -51,7 +51,7 @@ LDMIA_LOOP:
 asm_getregs:
     stmia r0, {r0 - r15}
     mov pc, lr
-
+/*
 # Entry  r0: numerator (lo) must be signed positive
 #        r2: deniminator (den) must be non-zero and signed negative
 .globl idiv
@@ -80,3 +80,4 @@ imod:
         .endr
 	mov r0, r1
         mov pc, lr ;#return
+*/

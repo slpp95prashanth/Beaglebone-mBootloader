@@ -81,7 +81,7 @@ void early_system_init(void)
 #ifdef DEBUG_PRINTF
 extern void tmp_putc1(int *, char);
 void (*tmp_putc)(int *, char) = &tmp_putc1;
-    init_printf(tmp_putc, 0);
+    init_printf(0, tmp_putc);
 #endif /* DEBUG_PRINTF */
 
 #ifdef SHELL
