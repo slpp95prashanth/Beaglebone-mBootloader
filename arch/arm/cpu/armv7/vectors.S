@@ -6,69 +6,84 @@
 
 .align 4
 
-#.globl EXP_STACK_START_IN
-#EXP_STACK_START_IN:
-#        .word   0x402ff000			@ Exception-mode stack
+.globl EXP_STACK_START
+EXP_STACK_START:
+        .word   EXP_STACK_START_IN			@ Exception-mode stack
 
+.macro asm_getregs
+    stmia r13, {r0 - r15}
+.endm
+
+.align 4
 undefined_instruction:
-        ldr     r13, =EXP_STACK_START_IN         @ setup our mode stack
-	push	{r0, lr}
-        bl      do_regdump
-	ldr	r0, =WARM_RESET
-	bl	reset_cpu
-	pop	{r0, lr}
-        mov pc, lr
+        ldr     sp, =EXP_STACK_START_IN         @ setup our mode stack
+	sub	sp, sp, #128
+	stmia	sp, {r0 - r15}			@ store r0 - r12 to stack
+	mrs	r6, cpsr
+	str	r6, [sp, #64]
+	mov	r0, sp
+        bl      show_regs
 
+.align 4
 software_interrupt:
-        ldr     r13, =EXP_STACK_START_IN         @ setup our mode stack
-	push	{r0, lr}
-        bl      do_regdump
-	ldr	r0, =WARM_RESET
-	bl	reset_cpu
-	pop	{r0, lr}
-        mov pc, lr
+        ldr     sp, =EXP_STACK_START_IN         @ setup our mode stack
+	sub	sp, sp, #128
+	stmia	sp, {r0 - r15}			@ store r0 - r12 to stack
+	mrs	r6, cpsr
+	str	r6, [sp, #64]
+	mov	r0, sp
+        bl      show_regs
 
+.align 4
 prefetch_abort:
-        ldr     r13, =EXP_STACK_START_IN         @ setup our mode stack
-	push	{r0, lr}
-        bl      do_regdump
-	ldr	r0, =WARM_RESET
-	bl	reset_cpu
-	pop	{r0, lr}
-        mov pc, lr
-data_abort:
-        ldr     r13, =EXP_STACK_START_IN         @ setup our mode stack
-	push	{r0, lr}
-        bl      do_regdump
-	ldr	r0, =WARM_RESET
-	bl	reset_cpu
-	pop	{r0, lr}
-        mov pc, lr
+        ldr     sp, =EXP_STACK_START_IN         @ setup our mode stack
+	sub	sp, sp, #128
+	stmia	sp, {r0 - r15}			@ store r0 - r12 to stack
+	mrs	r6, cpsr
+	str	r6, [sp, #64]
+	mov	r0, sp
+        bl      show_regs
 
+.align 4
+data_abort:
+        ldr     sp, =EXP_STACK_START_IN         @ setup our mode stack
+	sub	sp, sp, #128
+	stmia	sp, {r0 - r15}			@ store r0 - r12 to stack
+	mrs	r6, cpsr
+	str	r6, [sp, #64]
+	mov	r0, sp
+        bl      show_regs
+
+.align 4
 not_used:
-        ldr     r13, =EXP_STACK_START_IN         @ setup our mode stack
-	push	{r0, lr}
-        bl      do_regdump
-	ldr	r0, =WARM_RESET
-	bl	reset_cpu
-	pop	{r0, lr}
-        mov pc, lr
+        ldr     sp, =EXP_STACK_START_IN         @ setup our mode stack
+	sub	sp, sp, #128
+	stmia	sp, {r0 - r15}			@ store r0 - r12 to stack
+	mrs	r6, cpsr
+	str	r6, [sp, #64]
+	mov	r0, sp
+        bl      show_regs
+
+.align 4
 irq:
-        ldr     r13, =EXP_STACK_START_IN         @ setup our mode stack
-	push	{r0, lr}
-        bl      do_regdump
-	ldr	r0, =WARM_RESET
-	bl	reset_cpu
-	pop	{r0, lr}
-        mov pc, lr
+        ldr     sp, =EXP_STACK_START_IN         @ setup our mode stack
+	sub	sp, sp, #128
+	stmia	sp, {r0 - r15}			@ store r0 - r12 to stack
+	mrs	r6, cpsr
+	str	r6, [sp, #64]
+	mov	r0, sp
+        bl      show_regs
+
+.align 4
 fiq:
-        ldr     r13, =EXP_STACK_START_IN         @ setup our mode stack
-	push	{r0, lr}
-        bl      do_regdump
-	ldr	r0, =WARM_RESET
-	bl	reset_cpu
-	pop	{r0, lr}
-        mov pc, lr
+        ldr     sp, =EXP_STACK_START_IN         @ setup our mode stack
+	sub	sp, sp, #128
+	stmia	sp, {r0 - r15}			@ store r0 - r12 to stack
+	mrs	r6, cpsr
+	str	r6, [sp, #64]
+	mov	r0, sp
+        bl      show_regs
+
 #define CR_V    (1 << 13)       /* Vectors relocated to 0xffff0000      */
 
 set_exception_vectors:
@@ -90,7 +105,9 @@ asm_exception:
 	pop {lr}
         mov pc, lr
 
-.globl __exception_vector_table
+.align 4
+
+#.globl __exception_vector_table
 __exception_vector_table:
 	nop
         ldr     pc, _undefined_instruction

@@ -20,6 +20,7 @@ struct regs {
     uint32_t r13;
     uint32_t r14;
     uint32_t r15;
+    uint32_t cpsr;
 };
 
 void asm_getregs(struct regs *);

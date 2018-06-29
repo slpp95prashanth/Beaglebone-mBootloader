@@ -15,6 +15,8 @@ char *strchr(const char *s, int c);
 unsigned long int simple_strtoul(const char *nptr, char **endptr, int base);
 
 void asm_memset(void *, char, int);
+void asm_memcpy(void *, const void *, int);
 void memset(char *, char, int);
+void memcpy(char *, char *, int);
 
 #endif /* _LIB_STRING_H */
