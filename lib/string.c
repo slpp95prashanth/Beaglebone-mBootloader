@@ -92,3 +92,22 @@ void memset(char *str, char ch, int size)
     return;
 }
 
+void memcpy(char *dst, char *src, int size)
+{
+    int one_byte_copy, i;
+
+    one_byte_copy = size % 16;			// 16 is the block size for copy
+
+    if (size >= 16)
+        asm_memcpy(dst, src, size - one_byte_copy);
+
+    dst = (char *)dst + size - one_byte_copy;
+    src = (char *)src + size - one_byte_copy;
+
+    for (i = 0 ; i < one_byte_copy ; i++) {
+	*((char *)dst + (i)) = *((char *)src + (i));
+    }
+
+    return;
+}
+

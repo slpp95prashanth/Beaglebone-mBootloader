@@ -36,7 +36,6 @@ int do_regdump(void)
 
 int do_md(char *addr)
 {
-    char str[120] = {};
     unsigned int address, data, len;
 
     len = strlen(addr);
@@ -50,12 +49,17 @@ int do_md(char *addr)
 
     data = readl(address);
 
+#ifndef DEBUG_PRINTF
+    char str[120] = {};
     inttostr(data, str, 16);
 
     puts(addr);
     puts(" = ");
     puts(str);
     puts("\n");
+#else
+    printf("%p = %p\n", addr, data);
+#endif
 
     return 0;
 }
