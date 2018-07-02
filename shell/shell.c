@@ -58,7 +58,7 @@ int do_md(char *addr)
     puts(str);
     puts("\n");
 #else
-    printf("%p = %p\n", addr, data);
+    printf("%p = %p\n", address, data);
 #endif
 
     return 0;

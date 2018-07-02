@@ -21,25 +21,6 @@ static void watchdog_disable(void)
                 ;
 }
 
-#ifdef SERIAL_UART
-
-void uart_soft_reset(void)
-{
-    unsigned int regVal;
-
-    regVal = readl(AM335X_SERIAL_UART0_SYSCON);
-    regVal |= UART_RESET;
-    writel(regVal, AM335X_SERIAL_UART0_SYSCON);
-
-    while ((readl(AM335X_SERIAL_UART0_SYSSTATS) & 
-		UART_CLK_RUNNING_MASK) != UART_CLK_RUNNING_MASK);
-
-    /* Disable smart idle */
-    regVal = readl(AM335X_SERIAL_UART0_SYSCON);
-    regVal |= UART_SMART_IDLE_EN;
-    writel(regVal, AM335X_SERIAL_UART0_SYSCON);
-}
-
 void uart_clock_enable(void)
 {
     writel(PRCM_MOD_EN, AM335X_CLK_WKUP_UART0);
@@ -47,7 +28,11 @@ void uart_clock_enable(void)
            ;
 }
 
-#endif /* SERIAL_UART */
+void dev_clk_enable(void)
+{
+    uart_clock_enable();
+    return ;
+}
 
 void early_system_init(void)
 {
@@ -60,15 +45,9 @@ void early_system_init(void)
 
     config_ctrl_module();
 
+    dev_clk_enable();
 #ifdef SERIAL_UART
-    uart_clock_enable();
-
-    uart_soft_reset();
     uart_console_init();
-
-#ifdef SERIAL_DEBUG_CONSOLE
-    do_check_uart();
-#endif
 
 #endif /* SERIAL_UART */
 
