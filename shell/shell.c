@@ -6,6 +6,7 @@
 #include <asm/io.h>
 #include <asm/regs.h>
 #include <asm/prcm.h>
+#include <gpio/gpio.h>
 
 #ifdef SHELL
 #ifdef SHELL_REGDUMP
@@ -106,6 +107,37 @@ int do_mm(char *addr, char *data)
 
 #endif /* SHELL_MM */
 
+int do_gpio(int argc, char **argv)
+{
+    int gpio;
+
+
+    gpio = simple_strtoul(argv[(2)], NULL, 10);
+
+    if (CMD_CMP(argv[1], "set") == 0) {
+
+	gpio_set(gpio);
+
+    } else if (CMD_CMP(argv[1], "clear") == 0) {
+
+	gpio_clear(gpio);
+
+    } else if (CMD_CMP(argv[1], "in") == 0) {
+
+	gpio_direction_in(gpio);
+
+    } else if (CMD_CMP(argv[1], "out") == 0) {
+
+	gpio_direction_out(gpio);
+
+    } else {
+	puts("Usage: gpio <[set] [clear] [in] [out]> <gpio pin>\n");
+	return -1;
+    }
+
+    return 0;
+}
+
 void shell_start(void)
 {
     char cmd[MAX_CMD_LEN] = {}, *argv[MAX_CMD_ARGS];
@@ -154,12 +186,21 @@ void shell_start(void)
 	    	reset_cpu(WARM_RESET);
 	    }
 #endif /* SHELL_RESET */
+	} else if (CMD_CMP(cmd, "gpio") == (0)) {
+#ifdef SHELL_GPIO
+	    if (argc != 3) {	
+		puts("Usage: gpio <[set] [clear] [in] [out]> <gpio pin>\n");
+	    } else {
+		ret = do_gpio(argc, argv);
+	    }
+#endif /* SHELL_GPIO */
 	} else {
 	    puts("unknown command\n");
 	}
 
-	if (ret < 0)
+	if (ret < 0) {
 	    memset(cmd, '\0', MAX_CMD_LEN);
+	}
     }
 
     /* control does not reach here */
