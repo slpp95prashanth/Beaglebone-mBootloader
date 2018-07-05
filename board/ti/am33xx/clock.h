@@ -5,6 +5,10 @@
 
 #define AM335X_CLK_WKUP_UART0   (AM335X_CLK_WKUP_BASE + 0xb4)
 
+#define AM335X_CM_PER_BASE  0x44e00000
+
+#define AM335X_CM_PER_GPIO1_CLKCTRL   (AM335X_CM_PER_BASE + 0xac)
+
 #define PRCM_MOD_EN             0x2
 
 

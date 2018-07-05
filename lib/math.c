@@ -1,9 +1,11 @@
+#include <stdio.h>
+
 int idiv_by_pow16(unsigned  num, unsigned den)
 {
     int count = 0;
 
     while (den >> count != 1) {
-        count += 4;
+        count++;
     }
 
     return num >> count;

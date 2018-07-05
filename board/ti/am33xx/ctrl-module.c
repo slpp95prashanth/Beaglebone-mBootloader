@@ -15,6 +15,7 @@ void config_ctrl_module(void)
     _config_ctrl_module(MODE(0) | PULLUDEN, AM335X_CTRL_CONF_UART0_TXD);
 //#endif
 /* SERIAL_UART */
+    _config_ctrl_module(MODE(7), AM335X_CTRL_CONF_GPMC_A5);
     return;
 }
 
