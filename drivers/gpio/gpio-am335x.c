@@ -36,7 +36,21 @@ void gpio_clear_value(short bank, short gpio)
 
     return ;
 }
- 
+
+int gpio_get_value(short bank, short gpio)
+{
+    uint32_t addr, direction;
+
+    addr = gpio_bank[bank];
+
+    direction = readl(addr + AM335X_GPIO_OE) & (1 << gpio);
+
+    if (direction) {
+	return (readl(addr + AM335X_GPIO_DATAIN) & (1 << gpio)) >> gpio;
+    }
+
+    return -1;
+}
 void gpio_oe_enable(short bank, short gpio, uint8_t direction)
 {
     uint32_t addr;

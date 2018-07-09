@@ -13,7 +13,6 @@
 
 int do_regdump(void)
 {
-
     int i;
 
     char str[12] = {};
@@ -21,7 +20,7 @@ int do_regdump(void)
 
     asm_getregs(&ptregs);
 
-    for (i = 0;i < 16;i++) {
+    for (i = 0;i <= 16;i++) {
 	inttostr(*(int *)((unsigned int *)&ptregs + i), (str), 16);
 	puts("0x");
 	puts(str);
@@ -129,6 +128,10 @@ int do_gpio(int argc, char **argv)
     } else if (CMD_CMP(argv[1], "out") == 0) {
 
 	gpio_direction_out(gpio);
+
+    } else if (CMD_CMP(argv[1], "get") == 0) {
+
+	printf("gpio %p = %p\n", gpio, (gpio_get(gpio)));
 
     } else {
 	puts("Usage: gpio <[set] [clear] [in] [out]> <gpio pin>\n");

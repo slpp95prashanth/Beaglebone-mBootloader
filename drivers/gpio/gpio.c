@@ -71,4 +71,17 @@ void gpio_clear(int gpio)
     gpio_clear_value(bank, (GPIO_GET_PIN(gpio)));
 }
 
+int gpio_get(int gpio)
+{
+    int bank;
+
+    bank = GPIO_GET_BANK(gpio);
+
+    if (bank > MAX_BANK) {
+        return -1;
+    }
+
+    return gpio_get_value(bank, (GPIO_GET_PIN(gpio)));
+}
+
 #endif /* GPIO */
