@@ -35,7 +35,7 @@ void gets(char *str)
 {
     do {
 	*str = NS16550_getc();
-        NS16550_putc(* str);
+        NS16550_putc(*str);
     } while (*str++ != '\r');
 
     *--str = '\0';

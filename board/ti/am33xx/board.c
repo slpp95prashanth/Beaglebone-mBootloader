@@ -30,6 +30,9 @@ void uart_clock_enable(void)
 
 void gpio_clock_enable(void)
 {
+    writel(PRCM_MOD_EN, AM335X_CLK_WKUP_GPIO0);
+    while (readl(AM335X_CLK_WKUP_GPIO0) != PRCM_MOD_EN)
+           ;
     writel(PRCM_MOD_EN, AM335X_CM_PER_GPIO1_CLKCTRL);
     while (readl(AM335X_CM_PER_GPIO1_CLKCTRL) != PRCM_MOD_EN)
            ;
