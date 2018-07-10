@@ -2,15 +2,6 @@
 #include <am335x-gpio.h>
 #include <lib/math.h>
 
-int imod_less_than_32(int num, int den)
-{
-    while (num > den) {
-	num -= den;
-    }
-
-    return num;
-}
-
 #define GPIO_GET_BANK(gpio) \
     idiv_by_pow16(gpio, BANK_SIZE)
 
@@ -18,6 +9,23 @@ int imod_less_than_32(int num, int den)
     imod_less_than_32(gpio, BANK_SIZE - 1)
 
 #ifdef GPIO
+
+#ifdef IRQ
+
+int gpio_irq(int gpio, int mode)
+{
+    int bank;
+
+    bank = GPIO_GET_BANK(gpio);
+
+    if (bank > MAX_BANK) {
+	return -1;
+    }
+    
+    return _gpio_irq(bank, (GPIO_GET_PIN(gpio)), mode);
+}
+
+#endif /* IRQ */
 
 void gpio_direction_out(int gpio)
 {

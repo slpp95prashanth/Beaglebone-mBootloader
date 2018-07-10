@@ -1,5 +1,14 @@
 #include <stdio.h>
 
+int imod_less_than_32(int num, int den)
+{
+    while (num > den) {
+	num -= den;
+    }
+
+    return num;
+}
+
 int idiv_by_pow16(unsigned  num, unsigned den)
 {
     int count = 0;

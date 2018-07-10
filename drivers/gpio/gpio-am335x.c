@@ -2,10 +2,66 @@
 #include <asm/types.h>
 #include <am335x-gpio.h>
 #include <stdio.h>
+#include <am335x-irq.h>
+#include <gpio/gpio.h>
 
 #ifdef GPIO
 
 static uint32_t gpio_bank[] = {AM335x_GPIO0_BASE, AM335x_GPIO1_BASE};
+
+#ifdef IRQ
+
+void gpio_irq_init(void)
+{
+    asm_request_irq(AM335X_GPIO0_INTR, NULL, NULL);
+
+    return ;
+}
+
+int _gpio_irq(int bank, int gpio, int mode)
+{
+    uint32_t addr, direction;
+
+    addr = gpio_bank[bank];
+
+    direction = readl(addr + AM335X_GPIO_OE) & (1 << gpio);
+
+    if (!direction) {
+	return -1;
+    }
+ 
+    rmw_set(1 << gpio, addr + AM335X_GPIO_IRQSTATUS_SET_0);
+
+    if (mode & RISING_EDGE) {
+	rmw_set(1 << gpio, addr + AM335X_GPIO_RISINGDETECT);
+    } else {
+	rmw_clear(1 << gpio, addr + AM335X_GPIO_RISINGDETECT);
+    }
+
+    if (mode & FALLING_EDGE) {
+	rmw_set(1 << gpio, addr + AM335X_GPIO_FALLINGDETECT);
+    } else {
+	rmw_clear(1 << gpio, addr + AM335X_GPIO_FALLINGDETECT);
+    }
+
+    if (mode & LEVEL_DETECT0) {
+	rmw_set(1 << gpio, addr + AM335X_GPIO_LEVELDETECT0);
+    } else {
+	rmw_clear(1 << gpio, addr + AM335X_GPIO_LEVELDETECT0);
+    }
+
+    if (mode & LEVEL_DETECT1) {
+	rmw_set(1 << gpio, addr + AM335X_GPIO_LEVELDETECT1);
+    } else {
+	rmw_clear(1 << gpio, addr + AM335X_GPIO_LEVELDETECT1);
+    }
+
+
+    return 0;
+}
+
+    
+#endif /* IRQ */
 
 void gpio_set_value(short bank, short gpio)
 {

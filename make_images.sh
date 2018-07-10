@@ -7,6 +7,9 @@ SERIAL_UART=/dev/ttyUSB1
 if [ ! -f u-boot-spl.bin ] ; then
     exit
 fi
+
+su -c "echo -e \"reset\r\" > $SERIAL_UART"
+
 tty1=`ps -eaf | grep minicom | grep -v color | grep -o pts/...`
 tty1=`echo $tty1 | head -n1 | cut -d " " -f1`
 echo $tty1

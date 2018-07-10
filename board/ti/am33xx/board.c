@@ -1,13 +1,15 @@
-#include<asm/io.h>
-#include<wdt.h>
-#include<serial/ns16550.h>
-#include<serial/uart.h>
-#include<cmd.h>
-#include<stdio.h>
-#include"clock.h"
-#include"ctrl-module.h"
+#include <asm/io.h>
+#include <serial/ns16550.h>
+#include <serial/uart.h>
+#include <wdt.h>
+#include <am335x-irq.h>
+#include "clock.h"
+#include "ctrl-module.h"
+#include <stdio.h>
+#include <cmd.h>
 
 extern void asm_exception(void);
+extern void irq_init(void);
 
 typedef unsigned int long ulong;
 
@@ -66,12 +68,16 @@ void early_system_init(void)
     asm_exception();
 #endif
 
+#ifdef IRQ
+    irq_init();
+#endif
+
 #ifdef SERIAL_UART
 
 #ifdef DEBUG_PRINTF
 extern void tmp_putc1(int *, char);
-void (*tmp_putc)(int *, char) = &tmp_putc1;
-    init_printf(0, tmp_putc);
+//void (*tmp_putc)(int *, char) = &tmp_putc1;
+    init_printf(0, &tmp_putc1);
 #endif /* DEBUG_PRINTF */
 
 #ifdef SHELL

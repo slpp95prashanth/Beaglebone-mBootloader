@@ -97,6 +97,17 @@ set_exception_vectors:
         mcr     p15, 0, r0, c12, c0, 0  @Set VBAR
         mov pc, lr
 
+.globl cpu_irq_init
+cpu_irq_init:
+    push {r6, lr}
+    mrs	r6, cpsr
+    bl do_regdump
+    bic r6, r6, #0xffffff7f
+    ldr	r6, =0x60000113
+    msr	cpsr, r6
+    bl do_regdump
+    pop	{r6, lr}
+    mov	pc, lr
 
 .globl asm_exception
 asm_exception:

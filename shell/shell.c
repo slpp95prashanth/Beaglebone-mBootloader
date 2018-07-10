@@ -7,6 +7,7 @@
 #include <asm/regs.h>
 #include <asm/prcm.h>
 #include <gpio/gpio.h>
+#include <lib/irq.h>
 
 #ifdef SHELL
 #ifdef SHELL_REGDUMP

@@ -6,5 +6,10 @@
 #define writeb(v, a) (*(volatile unsigned char *)(a) = (v))
 #define readb(a) (*(volatile unsigned char *)(a))
 
+#define rmw_set(data, addr) \
+	writel(readl(addr) | (data), addr)
+
+#define rmw_clear(data, addr) \
+	writel(readl(addr) & (~data), addr)
 
 #endif /* _ASM_IO_H */
