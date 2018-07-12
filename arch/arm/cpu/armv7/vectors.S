@@ -22,17 +22,22 @@ undefined_instruction:
 	mrs	r6, cpsr
 	str	r6, [sp, #64]
 	mov	r0, sp
-        bl      show_regs
+        bl      _regs
 
 .align 4
 software_interrupt:
         ldr     sp, =EXP_STACK_START_IN         @ setup our mode stack
-	sub	sp, sp, #128
-	stmia	sp, {r0 - r15}			@ store r0 - r12 to stack
-	mrs	r6, cpsr
-	str	r6, [sp, #64]
-	mov	r0, sp
-        bl      show_regs
+	sub	lr, lr, #4
+	stmfd	sp!, {r0 - r12, r14}
+	mrs	r6, spsr
+	orr	r6, r6, #0x00000080		@ disable I bit for irq to be triggered
+	msr	spsr, r6
+#ifdef DEBUG_IRQ
+	stmfd	sp!, {r6}
+	bl	irq_showregs
+	ldmfd	sp!, {r6}
+#endif
+	ldmfd	sp!, {r0 - r12, pc}^
 
 .align 4
 prefetch_abort:
@@ -42,7 +47,7 @@ prefetch_abort:
 	mrs	r6, cpsr
 	str	r6, [sp, #64]
 	mov	r0, sp
-        bl      show_regs
+        bl      _regs
 
 .align 4
 data_abort:
@@ -52,7 +57,7 @@ data_abort:
 	mrs	r6, cpsr
 	str	r6, [sp, #64]
 	mov	r0, sp
-        bl      show_regs
+        bl      _regs
 
 .align 4
 not_used:
@@ -62,17 +67,22 @@ not_used:
 	mrs	r6, cpsr
 	str	r6, [sp, #64]
 	mov	r0, sp
-        bl      show_regs
+        bl      _regs
 
 .align 4
 irq:
         ldr     sp, =EXP_STACK_START_IN         @ setup our mode stack
-	sub	sp, sp, #128
-	stmia	sp, {r0 - r15}			@ store r0 - r12 to stack
-	mrs	r6, cpsr
-	str	r6, [sp, #64]
-	mov	r0, sp
-        bl      show_regs
+	sub	lr, lr, #4
+	stmfd	sp!, {r0 - r12, r14}
+	mrs	r6, spsr
+	orr	r6, r6, #0x00000080		    @ disable I bit for irq to be triggered
+	msr	spsr, r6
+#ifdef DEBUG_IRQ
+	stmfd	sp!, {r6}
+	bl	irq_showregs
+	ldmfd	sp!, {r6}
+#endif
+	ldmfd	sp!, {r0 - r12, pc}^
 
 .align 4
 fiq:
@@ -82,7 +92,7 @@ fiq:
 	mrs	r6, cpsr
 	str	r6, [sp, #64]
 	mov	r0, sp
-        bl      show_regs
+        bl      _regs
 
 #define CR_V    (1 << 13)       /* Vectors relocated to 0xffff0000      */
 
@@ -99,14 +109,12 @@ set_exception_vectors:
 
 .globl cpu_irq_init
 cpu_irq_init:
-    push {r6, lr}
+    push {r6}
     mrs	r6, cpsr
-    bl do_regdump
-    bic r6, r6, #0xffffff7f
-    ldr	r6, =0x60000113
+    bic r6, r6, #0x00000080		    @ disable I bit for irq to be triggered
+#    ldr r6, =0x60000113
     msr	cpsr, r6
-    bl do_regdump
-    pop	{r6, lr}
+    pop	{r6}
     mov	pc, lr
 
 .globl asm_exception
@@ -117,7 +125,6 @@ asm_exception:
         mov pc, lr
 
 .align 4
-
 #.globl __exception_vector_table
 __exception_vector_table:
 	nop

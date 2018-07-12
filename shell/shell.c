@@ -134,8 +134,12 @@ int do_gpio(int argc, char **argv)
 
 	printf("gpio %p = %p\n", gpio, (gpio_get(gpio)));
 
+    } else if (CMD_CMP(argv[1], "irq") == 0) {
+
+	gpio_irq(gpio, RISING_EDGE | FALLING_EDGE);
+    
     } else {
-	puts("Usage: gpio <[set] [clear] [in] [out]> <gpio pin>\n");
+	puts("Usage: gpio <[set] [clear] [in] [out] [irq]> <gpio pin>\n");
 	return -1;
     }
 
@@ -193,7 +197,7 @@ void shell_start(void)
 	} else if (CMD_CMP(cmd, "gpio") == (0)) {
 #ifdef SHELL_GPIO
 	    if (argc != 3) {	
-		puts("Usage: gpio <[set] [clear] [in] [out]> <gpio pin>\n");
+		puts("Usage: gpio <[set] [clear] [in] [out] [irq]> <gpio pin>\n");
 	    } else {
 		ret = do_gpio(argc, argv);
 	    }
