@@ -62,6 +62,12 @@ void early_system_init(void)
 #ifdef SERIAL_UART
     uart_console_init();
 
+#ifdef DEBUG_PRINTF
+extern void tmp_putc1(int *, char);
+//void (*tmp_putc)(int *, char) = &tmp_putc1;
+    init_printf(0, &tmp_putc1);
+#endif /* DEBUG_PRINTF */
+
 #endif /* SERIAL_UART */
 
 #ifdef EXCEPTION
@@ -73,12 +79,6 @@ void early_system_init(void)
 #endif
 
 #ifdef SERIAL_UART
-
-#ifdef DEBUG_PRINTF
-extern void tmp_putc1(int *, char);
-//void (*tmp_putc)(int *, char) = &tmp_putc1;
-    init_printf(0, &tmp_putc1);
-#endif /* DEBUG_PRINTF */
 
 #ifdef SHELL
     shell_start();

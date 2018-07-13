@@ -11,9 +11,25 @@ static uint32_t gpio_bank[] = {AM335x_GPIO0_BASE, AM335x_GPIO1_BASE};
 
 #ifdef IRQ
 
+int _gpio0_irq_handler(int irq, void *data)
+{
+    char *addr = (char *)gpio_bank[0];
+
+/* Interrupt ACK */
+    while(readl(addr + AM335X_GPIO_IRQSTATUS_0)) {
+	writel(readl(addr + AM335X_GPIO_IRQSTATUS_0), \
+		(addr + AM335X_GPIO_IRQSTATUS_0));
+	printf("%p\n", (readl(addr + AM335X_GPIO_IRQSTATUS_0)));
+    }
+
+    printf("%s irq=%p data=%p\n", __func__, irq, data);
+
+    return 0;
+}
+
 void gpio_irq_init(void)
 {
-    asm_request_irq(AM335X_GPIO0_INTR, NULL, NULL);
+    asm_request_irq(AM335X_GPIO0_INTR, _gpio0_irq_handler, gpio_bank);
 
     return ;
 }

@@ -9,7 +9,7 @@ CC:=$(CROSS_COMPILE)gcc
 LD:=$(CROSS_COMPILE)ld.bfd
 OBJCOPY:=$(CROSS_COMPILE)objcopy
 
-CFLAGS+= -fno-builtin -fno-stack-protector -Wall -nostdinc -Os
+CFLAGS+= -fno-builtin -fno-stack-protector -Wall -nostdinc -Os -mcpu=cortex-a8
 
 ifeq ($(DEBUG), 1)
 CFLAGS+= -g
