@@ -107,6 +107,8 @@ int do_mm(char *addr, char *data)
 
 #endif /* SHELL_MM */
 
+#if defined(GPIO) && defined(SHELL_GPIO)
+
 int do_gpio(int argc, char **argv)
 {
     int gpio;
@@ -133,18 +135,25 @@ int do_gpio(int argc, char **argv)
     } else if (CMD_CMP(argv[1], "get") == 0) {
 
 	printf("gpio %p = %p\n", gpio, (gpio_get(gpio)));
-
+#ifdef IRQ
     } else if (CMD_CMP(argv[1], "irq") == 0) {
 
-	gpio_irq(gpio, RISING_EDGE | FALLING_EDGE);
-    
+	gpio_irq(gpio, RISING_EDGE);
+#endif
     } else {
-	puts("Usage: gpio <[set] [clear] [in] [out] [irq]> <gpio pin>\n");
+	puts("Usage: gpio <[set] [clear] [in] [out] ");
+#ifdef IRQ
+	puts("[irq]> ");
+#endif
+	puts("<gpio pin>\n");
+
 	return -1;
     }
 
     return 0;
 }
+
+#endif /* GPIO && SHELL_GPIO */
 
 void shell_start(void)
 {
@@ -195,13 +204,17 @@ void shell_start(void)
 	    }
 #endif /* SHELL_RESET */
 	} else if (CMD_CMP(cmd, "gpio") == (0)) {
-#ifdef SHELL_GPIO
-	    if (argc != 3) {	
-		puts("Usage: gpio <[set] [clear] [in] [out] [irq]> <gpio pin>\n");
+#if defined(GPIO) && defined(SHELL_GPIO)
+	    if (argc != 3) {
+		puts("Usage: gpio <[set] [clear] [in] [out] ");
+#ifdef IRQ
+		puts("[irq]> ");
+#endif
+		puts("<gpio pin>\n");
 	    } else {
 		ret = do_gpio(argc, argv);
 	    }
-#endif /* SHELL_GPIO */
+#endif /* GPIO && SHELL_GPIO */
 	} else {
 	    puts("unknown command\n");
 	}

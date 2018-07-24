@@ -1,4 +1,5 @@
 #include <asm/io.h>
+#include <timer/timer.h>
 #include <serial/ns16550.h>
 #include <serial/uart.h>
 #include <wdt.h>
@@ -40,10 +41,20 @@ void gpio_clock_enable(void)
            ;
 }
 
+void timer_clock_enable(void)
+{
+    writel(PRCM_MOD_EN, AM335X_CLK_WKUP_TIMER0);
+    while (readl(AM335X_CLK_WKUP_TIMER0) != PRCM_MOD_EN)
+           ;
+
+    return ;
+}
+
 void dev_clk_enable(void)
 {
     uart_clock_enable();
     gpio_clock_enable();
+    timer_clock_enable();
     return ;
 }
 
@@ -76,6 +87,10 @@ extern void tmp_putc1(int *, char);
 
 #ifdef IRQ
     irq_init();
+#endif
+
+#ifdef TIMER
+    timer_init(0, (void *)(2));
 #endif
 
 #ifdef SERIAL_UART

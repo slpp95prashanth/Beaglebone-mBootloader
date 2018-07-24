@@ -1,4 +1,6 @@
 #include <lib/irq.h>
+#include <timer/timer.h>
+#include <gpio/gpio.h>
 #include <stdio.h>
 
 #ifdef IRQ
@@ -6,8 +8,12 @@
 void irq_init(void)
 {
     cpu_irq_init();
+#ifdef GPIO
     gpio_irq_init();
-
+#endif
+#ifdef TIMER
+    timer_irq_init();
+#endif
     return ;
 }
 
@@ -20,12 +26,12 @@ int do_irq(void)
 {
     int irq;
 
-//    disable_irq();
+    disable_irq();
 
     irq = get_irq();
-
+#ifdef DEBUG_IRQ
     printf("%s irq=%p\n", __func__, irq);
-
+#endif
     asm_handlers(irq);
 
     enable_irq();

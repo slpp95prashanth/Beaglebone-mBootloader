@@ -10,7 +10,9 @@
 #define AM335X_INTC_MIR3   (AM335X_INTC_BASE + 0xe4)
 #define IRQ_MASK    0xff
 
+#define TIMER0_INTR 66
 #define AM335X_GPIO0_INTR   96
+#define AM335X_GPIO1_INTR   98
 
 #define MAX_IRQS 127
 

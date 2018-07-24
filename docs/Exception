@@ -1,0 +1,3 @@
+By default boot up is supervisor mode and need to change the mode
+according to the exception which can be obtained from spsr
+

@@ -32,12 +32,14 @@ software_interrupt:
 	mrs	r6, spsr
 	orr	r6, r6, #0x00000080		@ disable I bit for irq to be triggered
 	msr	spsr, r6
+#ifdef IRQ
 #ifdef DEBUG_IRQ
 	stmfd	sp!, {r6}
 	bl	irq_showregs
 	ldmfd	sp!, {r6}
 #endif
 	bl	do_irq
+#endif
 	ldmfd	sp!, {r0 - r12, pc}^
 
 .align 4
@@ -78,12 +80,14 @@ irq:
 	mrs	r6, spsr
 	orr	r6, r6, #0x00000080		    @ disable I bit for irq to be triggered
 	msr	spsr, r6
+#ifdef IRQ
 #ifdef DEBUG_IRQ
 	stmfd	sp!, {r6}
 	bl	irq_showregs
 	ldmfd	sp!, {r6}
 #endif
 	bl	do_irq
+#endif
 	ldmfd	sp!, {r0 - r12, pc}^
 
 .align 4
