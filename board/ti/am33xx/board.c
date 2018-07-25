@@ -50,11 +50,23 @@ void timer_clock_enable(void)
     return ;
 }
 
+void enable_emif_clocks(void)
+{
+        /* Enable the  EMIF_FW Functional clock */
+        writel(PRCM_MOD_EN, AM335X_CM_PER_EMIF_FW_CLKCTRL);
+        /* Enable EMIF0 Clock */
+        writel(PRCM_MOD_EN, AM335X_CM_PER_EMIF_CLKCTRL);
+        /* Poll if module is functional */
+        while ((readl(AM335X_CM_PER_EMIF_CLKCTRL)) != PRCM_MOD_EN)
+                ;
+}
+
 void dev_clk_enable(void)
 {
     uart_clock_enable();
     gpio_clock_enable();
     timer_clock_enable();
+    enable_emif_clocks();
     return ;
 }
 
@@ -93,6 +105,7 @@ extern void tmp_putc1(int *, char);
     timer_init(0, (void *)(2));
 #endif
 
+    ddr_init();
 #ifdef SERIAL_UART
 
 #ifdef SHELL
