@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <lib/irq.h>
 
+#ifdef EXCEPTION
+
 #ifdef IRQ
 
 static struct irq_handlers handlers[MAX_IRQS + 1];
@@ -102,3 +104,4 @@ int asm_handlers(int irq)
 }
 
 #endif /* IRQ */
+#endif /* EXCEPTION */

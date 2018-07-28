@@ -1,3 +1,4 @@
+#ifndef _DDR_
 /* AM335X EMIF Register values */
 #define VTP_CTRL_READY          (0x1 << 5)
 #define VTP_CTRL_ENABLE         (0x1 << 6)
@@ -357,4 +358,13 @@ struct emif_reg_struct {
         u32 emif_ddr_ext_phy_ctrl_24_shdw;
 };
 
+#include <gpio/gpio.h>
 
+void enable_emif_clocks(void);
+void config_ddr(unsigned int pll, unsigned int ioctrl,
+                const struct ddr_data *data, const struct cmd_control *ctrl,
+                const struct emif_regs *regs);
+
+void ddr_init(void);
+
+#endif /* DDR */

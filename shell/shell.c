@@ -135,14 +135,14 @@ int do_gpio(int argc, char **argv)
     } else if (CMD_CMP(argv[1], "get") == 0) {
 
 	printf("gpio %p = %p\n", gpio, (gpio_get(gpio)));
-#ifdef IRQ
+#if defined(EXCEPTION) && defined(IRQ)
     } else if (CMD_CMP(argv[1], "irq") == 0) {
 
 	gpio_irq(gpio, RISING_EDGE);
 #endif
     } else {
 	puts("Usage: gpio <[set] [clear] [in] [out] ");
-#ifdef IRQ
+#if defined(EXCEPTION) && defined(IRQ)
 	puts("[irq]> ");
 #endif
 	puts("<gpio pin>\n");
@@ -207,7 +207,7 @@ void shell_start(void)
 #if defined(GPIO) && defined(SHELL_GPIO)
 	    if (argc != 3) {
 		puts("Usage: gpio <[set] [clear] [in] [out] ");
-#ifdef IRQ
+#if defined(EXCEPTION) && defined(IRQ)
 		puts("[irq]> ");
 #endif
 		puts("<gpio pin>\n");

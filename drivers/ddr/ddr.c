@@ -1,6 +1,8 @@
 #include "ddr.h"
 #include <asm/io.h>
 
+#ifdef DDR
+
 static const struct ddr_data ddr3_data = {
         .datardsratio0 = MT41J128MJT125_RD_DQS,
         .datawdsratio0 = MT41J128MJT125_WR_DQS,
@@ -41,3 +43,5 @@ void ddr_init(void)
 
     return ;
 }
+
+#endif /* DDR */

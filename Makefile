@@ -4,7 +4,8 @@ SOC:=am33xx
 CROSS_COMPILE:=arm-linux-gnueabi-
 
 include .config
-
+include ./scripts/.config
+include .CFLAGS
 CC:=$(CROSS_COMPILE)gcc
 LD:=$(CROSS_COMPILE)ld.bfd
 OBJCOPY:=$(CROSS_COMPILE)objcopy
@@ -66,4 +67,9 @@ cleanall:
 	-rm $(addsuffix *~,$(dir $(FILES)))
 	-rm $(addsuffix *~,$(dir $(INCDIR)))
 	-rm *.o *~ .*~
-	rm MLO u-boot-spl u-boot-spl.bin u-boot-spl.map
+	-rm MLO u-boot-spl u-boot-spl.bin u-boot-spl.map
+	-make -C scripts/ distclean
+
+menuconfig:
+	make -C scripts/ menuconfig
+	cp scripts/.config ./config

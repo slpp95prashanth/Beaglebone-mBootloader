@@ -1,0 +1,40 @@
+config STACK_PTR
+    hex "Stack pointer"
+    default 0x402fffff
+
+menu EXCEPTION
+
+config EXCEPTION
+    bool "Exception"
+    default y
+
+config EXP_STACK_START_IN
+    depends on EXCEPTION
+    hex "exception stackpointer"
+    default 0x402ff000
+
+config COREDUMP
+    depends on EXCEPTION
+    bool "coredump"
+    default n
+
+menu IRQ
+
+config IRQ
+    depends on EXCEPTION
+    bool "IRQs"
+    default y
+
+config DEBUG_IRQ
+    depends on COREDUMP
+    depends on EXCEPTION
+    depends on IRQ
+    bool "debug prints in irq"
+    default n
+
+endmenu
+
+endmenu
+
+
+

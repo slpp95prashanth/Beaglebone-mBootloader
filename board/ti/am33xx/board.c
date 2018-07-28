@@ -11,6 +11,7 @@
 
 extern void asm_exception(void);
 extern void irq_init(void);
+extern void ddr_init(void);
 
 typedef unsigned int long ulong;
 
@@ -24,12 +25,18 @@ static void watchdog_disable(void)
                 ;
 }
 
+#ifdef SERIAL_UART
+
 void uart_clock_enable(void)
 {
     writel(PRCM_MOD_EN, AM335X_CLK_WKUP_UART0);
     while (readl(AM335X_CLK_WKUP_UART0) != PRCM_MOD_EN)
            ;
 }
+
+#endif /* SERIAL_UART */
+
+#ifdef GPIO
 
 void gpio_clock_enable(void)
 {
@@ -41,6 +48,10 @@ void gpio_clock_enable(void)
            ;
 }
 
+#endif /* GPIO */
+
+#ifdef TIMER
+
 void timer_clock_enable(void)
 {
     writel(PRCM_MOD_EN, AM335X_CLK_WKUP_TIMER0);
@@ -49,6 +60,10 @@ void timer_clock_enable(void)
 
     return ;
 }
+
+#endif /* TIMER */
+
+#ifdef DDR
 
 void enable_emif_clocks(void)
 {
@@ -61,12 +76,22 @@ void enable_emif_clocks(void)
                 ;
 }
 
+#endif /* DDR */
+
 void dev_clk_enable(void)
 {
+#ifdef SERIAL_UART
     uart_clock_enable();
+#endif
+#ifdef GPIO
     gpio_clock_enable();
+#endif
+#ifdef TIMER
     timer_clock_enable();
+#endif
+#ifdef DDR
     enable_emif_clocks();
+#endif
     return ;
 }
 
@@ -92,27 +117,31 @@ extern void tmp_putc1(int *, char);
 #endif /* DEBUG_PRINTF */
 
 #endif /* SERIAL_UART */
-
 #ifdef EXCEPTION
     asm_exception();
-#endif
 
 #ifdef IRQ
     irq_init();
+#endif
 #endif
 
 #ifdef TIMER
     timer_init(0, (void *)(2));
 #endif
 
+#ifdef DDR
     ddr_init();
+#endif
 #ifdef SERIAL_UART
 
 #ifdef SHELL
     shell_start();
+#else
+    while(1);
 #endif
 
 #endif /* SERIAL_UART */
+
     return;
 }
 

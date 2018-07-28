@@ -9,8 +9,10 @@
 
 #ifdef TIMER
 
+
 void timer_init(int irq, void *secs)
 {
+#if defined(EXCEPTION) && defined(IRQ)
     int loader;
 
     /* ACK interrupt */
@@ -37,16 +39,18 @@ void timer_init(int irq, void *secs)
 
     writel(START_TIMER | AUTO_RELOAD | TRIGGER_ON_OVERFLOW, AM335X_DMTIMER0_TLCR);
 
+#endif /* EXCEPTION && IRQ */
+
     return ;
 }
 
-#ifdef IRQ
+#if defined(EXCEPTION) && defined(IRQ)
 
 void timer_irq_init(void)
 {
     request_irq(TIMER0_INTR, (int (*)(int, void *))timer_init, (void *)2);
 }
 
-#endif
+#endif /* EXCEPTION && IRQ */
 
 #endif  /* TIMER */

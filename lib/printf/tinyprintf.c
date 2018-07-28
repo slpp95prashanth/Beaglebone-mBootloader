@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "tinyprintf.h"
 
 
+#ifdef DEBUG_PRINTF
+
 /*
  * Configuration
  */
@@ -519,3 +521,5 @@ int tfp_sprintf(char *str, const char *format, ...)
   return retval;
 }
 #endif
+
+#endif /* DEBUG_PRINTF */

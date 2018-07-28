@@ -1,5 +1,7 @@
 #include<serial/uart.h>
 
+#ifdef SERIAL_UART
+
 int uart_console_init(void)
 {
     struct uart uart;
@@ -10,4 +12,5 @@ int uart_console_init(void)
 
     return uart_dev_init(&uart);
 }
- 
+
+#endif /* SERIAL_UART */

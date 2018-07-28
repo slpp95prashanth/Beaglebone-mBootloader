@@ -30,7 +30,7 @@
 #define thumb_mode(regs) \
         (((regs)->cpsr & T_BIT))
 
-#ifdef CRASHDUMP 
+#ifdef COREDUMP 
 
 #ifdef DEBUG_IRQ
 
@@ -53,14 +53,15 @@ struct irq_regs {
 };
 
 void irq_showregs(void) {
+#ifdef DEBUG_PRINTF
     int i;
-    struct irq_regs *regs = (struct irq_regs *)((char *)EXP_STACK_START_IN - sizeof(struct irq_regs));
+    struct irq_regs *regs = (struct irq_regs *)((char *)EXP_STACK_START_IN 
+					- sizeof(struct irq_regs));
 
     for (i = 0; i < 15; i++) {
 	printf("%p\n", *((int *)regs + i));
     }
 
-#ifdef DEBUG_PRINTF
     printf("r14 = %p\n", regs->r14);
 
     for (i = 1;i <= 12;i++) {
@@ -77,6 +78,7 @@ void irq_showregs(void) {
 
 void show_regs(struct  regs *regs)
 {
+#ifdef DEBUG_PRINTF
     unsigned long flags;
 
 /*	const char *processor_modes[] = {
@@ -99,7 +101,6 @@ void show_regs(struct  regs *regs)
 	printf ("%p\n", *((int *)ptregs - flags));
     }
 
-#ifdef DEBUG_PRINTF
 
     printf ("pc : [<%08lx>]    lr : [<%08lx>]\n"
             "sp : %08lx  ip : %08lx  fp : %08lx\n",
@@ -124,15 +125,17 @@ void show_regs(struct  regs *regs)
     return ;
 }
 
+#endif /* COREDUMP */
+
 void _regs (struct regs *regs)
 {
+#ifdef COREDUMP
 	show_regs(regs);
-
+#endif
 	reset_cpu(0);
 	return;
 }
 
-#endif /* CRASHDUMP */
 
 /*
 void show_regs(struct regs *ptregs)

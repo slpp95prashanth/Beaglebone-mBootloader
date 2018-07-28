@@ -9,7 +9,7 @@
 
 static uint32_t gpio_bank[] = {AM335x_GPIO0_BASE, AM335x_GPIO1_BASE};
 
-#ifdef IRQ
+#if defined(EXCEPTION) && defined(IRQ)
 
 int _gpio0_irq_handler(int irq, void *data)
 {
@@ -94,7 +94,7 @@ int _gpio_irq(int bank, int gpio, int mode)
 }
 
     
-#endif /* IRQ */
+#endif /* EXCEPTION && IRQ */
 
 void gpio_set_value(short bank, short gpio)
 {
@@ -105,7 +105,7 @@ void gpio_set_value(short bank, short gpio)
     direction = readl(addr + AM335X_GPIO_OE) & (1 << gpio);
 
     if (!direction) {
-	writel(1 << gpio, addr + AM335X_GPIO_DATASET);
+	rmw_set(1 << gpio, addr + AM335X_GPIO_DATASET);
     }
 
     return ;
@@ -120,7 +120,7 @@ void gpio_clear_value(short bank, short gpio)
     direction = readl(addr + AM335X_GPIO_OE) & (1 << gpio);
 
     if (!direction) {
-	writel(1 << gpio, addr + AM335X_GPIO_DATACLEAR);
+	rmw_set(1 << gpio, addr + AM335X_GPIO_DATACLEAR);
     }
 
     return ;
@@ -134,6 +134,14 @@ int gpio_get_value(short bank, short gpio)
 
     direction = readl(addr + AM335X_GPIO_OE) & (1 << gpio);
 
+#ifdef DEBUG_GPIO
+    printf("addr=%p, direction=%s, value=%p\n", addr, 
+			readl(addr + AM335X_GPIO_OE) & (1 << gpio) ? "in" : "out",
+			readl(addr + AM335X_GPIO_OE) & (1 << gpio) ? 
+			(readl(addr + AM335X_GPIO_DATAIN) & (1 << gpio)) >> gpio : 
+			(readl(addr + AM335X_GPIO_DATAOUT) & (1 << gpio)) >> gpio);
+#endif
+
     if (direction) {
 	return (readl(addr + AM335X_GPIO_DATAIN) & (1 << gpio)) >> gpio;
     } else {
@@ -142,13 +150,27 @@ int gpio_get_value(short bank, short gpio)
 
     return -1;
 }
+
 void gpio_oe_enable(short bank, short gpio, uint8_t direction)
 {
     uint32_t addr;
 
     addr = gpio_bank[bank];
 
-    writel(direction << gpio, addr + AM335X_GPIO_OE);
+#ifdef DEBUG_GPIO
+    printf("addr=%p gpio=%p\n", addr, gpio);
+    printf("value=%p, addr=%p\n", 1 << gpio, addr + AM335X_GPIO_OE);
+#endif
+
+    if (direction) {
+	rmw_set(1 << gpio, addr + AM335X_GPIO_OE);
+    } else {
+	rmw_clear(1 << gpio, addr + AM335X_GPIO_OE);
+    }
+
+#ifdef DEBUG_GPIO
+    printf("value=%p\n", (readl(addr + AM335X_GPIO_OE)));
+#endif
 
     return ;
 }

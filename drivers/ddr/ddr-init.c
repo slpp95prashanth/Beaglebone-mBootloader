@@ -5,6 +5,8 @@
 #define CM_WKUP                         0x44E00400
 #define CM_DPLL                         0x44E00500
 
+#ifdef DDR
+
 const struct cm_perpll *cmper = (struct cm_perpll *)CM_PER;
 const struct cm_wkuppll *cmwkup = (struct cm_wkuppll *)CM_WKUP;
 const struct cm_dpll *cmdpll = (struct cm_dpll *)CM_DPLL;
@@ -230,3 +232,5 @@ void config_ddr(unsigned int pll, unsigned int ioctrl,
         set_sdram_timings(regs);
         config_sdram(regs);
 }
+
+#endif /* DDR */

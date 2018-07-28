@@ -1,0 +1,51 @@
+#
+# Automatically generated file; DO NOT EDIT.
+# Linux Kernel Configuration
+#
+
+#
+# Arch
+#
+CONFIG_STACK_PTR=0x402fffff
+
+#
+# EXCEPTION
+#
+CONFIG_EXCEPTION=y
+CONFIG_EXP_STACK_START_IN=0x402ff000
+CONFIG_COREDUMP=y
+
+#
+# IRQ
+#
+CONFIG_IRQ=y
+# CONFIG_DEBUG_IRQ is not set
+
+#
+# Drivers
+#
+CONFIG_TIMER=y
+
+#
+# GPIO
+#
+CONFIG_GPIO=y
+# CONFIG_DEBUG_GPIO is not set
+CONFIG_DDR=y
+CONFIG_SERIAL_UART=y
+
+#
+# Debug system
+#
+CONFIG_DEBUG=y
+CONFIG_DEBUG_PRINTF=y
+CONFIG_SHELL=y
+
+#
+# shell commands
+#
+CONFIG_SHELL_REGDUMP=y
+CONFIG_SHELL_MD=y
+CONFIG_SHELL_MM=y
+CONFIG_SHELL_GPIO=y
+CONFIG_SHELL_RESET=y

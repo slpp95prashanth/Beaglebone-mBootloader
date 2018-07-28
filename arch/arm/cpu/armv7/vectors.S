@@ -33,7 +33,7 @@ software_interrupt:
 	orr	r6, r6, #0x00000080		@ disable I bit for irq to be triggered
 	msr	spsr, r6
 #ifdef IRQ
-#ifdef DEBUG_IRQ
+#if defined(COREDUMP) && defined(DEBUG_IRQ)
 	stmfd	sp!, {r6}
 	bl	irq_showregs
 	ldmfd	sp!, {r6}
@@ -81,7 +81,7 @@ irq:
 	orr	r6, r6, #0x00000080		    @ disable I bit for irq to be triggered
 	msr	spsr, r6
 #ifdef IRQ
-#ifdef DEBUG_IRQ
+#if defined(COREDUMP) && defined(DEBUG_IRQ)
 	stmfd	sp!, {r6}
 	bl	irq_showregs
 	ldmfd	sp!, {r6}

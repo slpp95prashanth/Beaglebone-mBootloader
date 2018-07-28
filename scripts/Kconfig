@@ -1,0 +1,15 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/kconfig-language.txt.
+#
+
+# Thanks to https://github.com/embedded-it/kbuild-template
+
+#config SRCARCH
+#	string
+#	option env="SRCARCH"
+
+#source "arch/$SRCARCH/Kconfig"
+
+source "../Kconfig"
+

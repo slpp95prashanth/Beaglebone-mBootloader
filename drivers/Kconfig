@@ -1,0 +1,28 @@
+menu Drivers
+
+config TIMER
+    bool "timer"
+    default n
+
+menu GPIO
+
+config GPIO
+    bool "gpio"
+    default n
+
+config DEBUG_GPIO
+    depends on GPIO
+    bool "debug prints"
+    default n
+
+endmenu
+
+config DDR
+    bool "ddr"
+    default n
+
+config SERIAL_UART
+    bool "serial communications"
+    default y
+
+endmenu

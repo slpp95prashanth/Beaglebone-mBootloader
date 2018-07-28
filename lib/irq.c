@@ -3,6 +3,8 @@
 #include <gpio/gpio.h>
 #include <stdio.h>
 
+#ifdef EXCEPTION
+
 #ifdef IRQ
 
 void irq_init(void)
@@ -40,3 +42,5 @@ int do_irq(void)
 }
 
 #endif /* IRQ */
+
+#endif /* EXCEPTION */

@@ -115,8 +115,13 @@ void tfp_sprintf(char* s,char *fmt, ...);
 
 void tfp_format(void* putp,void (*putf) (int *,char),char *fmt, va_list va);
 
-#define printf tfp_printf 
-#define sprintf tfp_sprintf 
+#ifdef DEBUG_PRINTF
+#define printf(str, ...) tfp_printf(str, __VA_ARGS__)
+#define sprintf(str, ...) tfp_sprintf(str, __VA_ARGS__)
+#else
+#define printf(str, ...)
+#define sprintf(str, ...)
+#endif /* DEBUG_PRINTF */
 
 #endif
 
