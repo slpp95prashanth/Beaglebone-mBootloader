@@ -8,10 +8,9 @@ SECTIONS
  .text :
   {
   _start = .;
-  arch/arm/cpu/armv7/start.o (.text)
-  arch/arm/cpu/armv7/lib.o (.text)
-    *(.text) *(.rodata*) *(.vectors)
-  } >.sdram
+  start.o (.text)
+    *(.text) *(.rodata*)
+  } >.sram
 
  . = ALIGN(4);
 
@@ -21,14 +20,14 @@ SECTIONS
     *(.bss*)
     . = ALIGN(4);
     __bss_end__ = .;
-  } >.sdram
+  } >.sram
 
  . = ALIGN(4);
 
  .data :
   {
     *(.data*)
-  } >.sdram
+  } >.sram
 
   M_BOOT_END_ADDR = .;
 }

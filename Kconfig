@@ -21,4 +21,4 @@ config SHELL
     default y
 
 source "../shell/Kconfig"
-
+#source "../bootstrap/Kconfig"

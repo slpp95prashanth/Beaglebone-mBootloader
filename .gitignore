@@ -4,7 +4,9 @@
 *.map
 # ignore tmp
 *~
-mUART
+mUART/
 tmp/
+scripts/.config*
+*.cmd
 a.out
 tags 

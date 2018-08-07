@@ -12,6 +12,8 @@
 #ifdef SHELL
 #ifdef SHELL_REGDUMP
 
+extern int M_BOOT_END_ADDR;
+
 int do_regdump(void)
 {
     int i;
@@ -27,6 +29,8 @@ int do_regdump(void)
 	puts(str);
 	puts("\n");
     }
+
+    printf("M_BOOT_END_ADDR=%p\n", &M_BOOT_END_ADDR);
 
     return 0;
 }

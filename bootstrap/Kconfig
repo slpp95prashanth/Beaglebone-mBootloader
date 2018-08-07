@@ -1,0 +1,16 @@
+menu bootstrap
+
+config BOOTSTRAP
+    bool "Bootstrap image"
+    default n
+
+config LOADADDR__DDR
+    depends on BOOTSTRAP
+    hex "LOADADDR_DDR"
+    default 0x80000000
+
+config MALLOC_ADDR
+    hex "Heap memory"
+    default 0x88000000
+
+endmenu

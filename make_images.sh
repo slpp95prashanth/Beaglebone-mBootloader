@@ -3,6 +3,15 @@ set -x
 #set -e
 
 SERIAL_UART=/dev/ttyUSB1
+FILE=u-boot-spl.bin
+
+if [ ! -z "$1" ] ; then
+    FILE=$1
+fi
+
+#if [ ! -f $SERIAL_UART ] ; then
+#    exit
+#fi
 
 if [ ! -f u-boot-spl.bin ] ; then
     exit
@@ -16,7 +25,8 @@ echo $tty1
 
 sudo pkill minicom
 
-sx -vvv u-boot-spl.bin < $SERIAL_UART > $SERIAL_UART
+#sx -vvv u-boot-spl.bin < $SERIAL_UART > $SERIAL_UART
+sx -vvv $FILE < $SERIAL_UART > $SERIAL_UART
 
 if [ ! -z "$tty1" ] ; then
     ./tools/a.out -n /dev/$tty1 "sudo minicom -D $SERIAL_UART"
