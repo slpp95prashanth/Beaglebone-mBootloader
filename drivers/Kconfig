@@ -21,8 +21,17 @@ config DDR
     bool "ddr"
     default n
 
+menu UART
+
 config SERIAL_UART
     bool "serial communications"
     default y
+
+config UART1
+    depends on SERIAL_UART
+    bool "uart1"
+    default n
+
+endmenu
 
 endmenu

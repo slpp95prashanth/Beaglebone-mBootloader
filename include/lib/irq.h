@@ -10,5 +10,6 @@ int get_irq(void);
 
 void cpu_irq_init(void);
 void gpio_irq_init(void);
+void uart_irq_init(int);
 
 #endif /* _LIB_IRQ */

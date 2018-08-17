@@ -11,7 +11,7 @@ void *malloc(int size)
 
     malloc_free_block += size;
 
-    return malloc_free_block - size;
+    return (void *)(malloc_free_block - size);
 }
 
 void _config_ctrl_module(uint32_t mode, uint32_t addr)

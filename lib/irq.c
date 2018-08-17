@@ -16,6 +16,9 @@ void irq_init(void)
 #ifdef TIMER
     timer_irq_init();
 #endif
+#ifdef UART1
+    uart_irq_init(1);
+#endif
     return ;
 }
 

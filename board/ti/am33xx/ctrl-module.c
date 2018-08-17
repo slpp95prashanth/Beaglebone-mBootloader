@@ -16,6 +16,12 @@ void config_ctrl_module(void)
 //#endif
 /* SERIAL_UART */
     _config_ctrl_module(MODE(7), AM335X_CTRL_CONF_GPMC_A5);
+
+/* UART1 */
+    _config_ctrl_module(MODE(0) | PULLUDEN, AM335X_CTRL_CONF_UART1_TXD);
+    _config_ctrl_module(MODE(0) | PULLUP_EN | RXACTIVE, AM335X_CTRL_CONF_UART1_RXD);
+/* UART1 */
+
     return;
 }
 

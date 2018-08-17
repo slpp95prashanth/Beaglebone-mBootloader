@@ -19,5 +19,6 @@ struct uart {
 
 int uart_console_init(void);
 int uart_dev_init(struct uart *);
+void uart_port_1(void);
 
 #endif /* _SERIAL_UART_H */

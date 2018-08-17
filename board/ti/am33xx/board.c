@@ -32,6 +32,12 @@ void uart_clock_enable(void)
     writel(PRCM_MOD_EN, AM335X_CLK_WKUP_UART0);
     while (readl(AM335X_CLK_WKUP_UART0) != PRCM_MOD_EN)
            ;
+#ifdef UART1
+    writel(PRCM_MOD_EN, AM335X_CM_PER_UART1_CLKCTRL);
+    while (readl(AM335X_CM_PER_UART1_CLKCTRL) != PRCM_MOD_EN)
+           ;
+#endif
+    return ;
 }
 
 #endif /* SERIAL_UART */
@@ -107,8 +113,13 @@ void early_system_init(void)
     config_ctrl_module();
 
     dev_clk_enable();
+
 #ifdef SERIAL_UART
     uart_console_init();
+
+#ifdef UART1
+    uart_port_1();
+#endif
 
 #ifdef DEBUG_PRINTF
 extern void tmp_putc1(int *, char);
