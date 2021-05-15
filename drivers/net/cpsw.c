@@ -30,27 +30,73 @@
 /* CPSW_SL1 */
 #define CPSW_SL1_SOFT_RESET	(CPSW_SL1 + 0x0c)
 #define CPSW_SL1_RX_MAXLEN	(CPSW_SL1 + 0x10)
+#define CPSW_SL1_MACCONTROL	(CPSW_SL1 + 0x04)
+
+/* CPSW_SL1_MACCONTROL */
+#define CPSW_SL1_MACCONTROL_FULLDUPLEX	(0)
+#define CPSW_SL1_MACCONTROL_GMII_EN	(5)
+#define CPSW_SL1_MACCONTROL_IFCTL_A	(15)
 
 /* CPSW_SS */
 #define CPSW_SS_SOFT_RESET	(CPSW_SS + 0x8)
 
 /* CPSW_CPDMA */
 #define CPSW_CPDMA_SOFT_RESET	(CPSW_CPDMA + 0x1c)
+#define CPSW_CPDMA_TX_CONTROL	(CPSW_CPDMA + 0x04)
+#define CPSW_CPDMA_RX_CONTROL	(CPSW_CPDMA + 0x14)
+#define CPSW_CPDMA_DMASTATUS	(CPSW_CPDMA + 0x24)
 
 /* CPSW_ALE */
 #define CPSW_ALE_CONTROL	(CPSW_ALE + 0x08)
 #define CPSW_ALE_PORTCTL0	(CPSW_ALE + 0x40)
+#define CPSW_ALE_PORTCTL1	(CPSW_ALE + 0x44)
 
 /* CPSW_ALE CONTROL*/
 #define CPSW_ALE_CONTROL_ALE_ENABLE	(31)
 #define CPSW_ALE_CONTROL_ALE_TABLE_CLEAR	(30)
 
-/* CPSW_ALE_PORTCTL0 */
-#define CPSW_ALE_PORTCTL0_PORT_STATE_FORWARD	(3)
-
 /* CPSW_PORT */
 #define CPSW_PORT_P0_CPDMA_TX_PRI_MAP	(CPSW_PORT + 0x1c)
 #define CPSW_PORT_P0_CPDMA_RX_CH_MAP	(CPSW_PORT + 0x20)
+#define CPSW_PORT_P1_SA_LO		(CPSW_PORT + 0x20)
+#define CPSW_PORT_P1_SA_HI		(CPSW_PORT + 0x24)
+
+/* CPSW_ALE_PORTCTL */
+#define CPSW_ALE_PORTCTL_PORT_STATE_FORWARD	(3)
+
+/* CPSW_STATERAM */
+#define CPSW_STATERAM_TX0_HDP	(CPSW_STATERAM + 0X00)
+#define CPSW_STATERAM_TX1_HDP	(CPSW_STATERAM + 0X04)
+#define CPSW_STATERAM_TX2_HDP	(CPSW_STATERAM + 0X08)
+#define CPSW_STATERAM_TX3_HDP	(CPSW_STATERAM + 0X0c)
+#define CPSW_STATERAM_TX4_HDP	(CPSW_STATERAM + 0X10)
+#define CPSW_STATERAM_TX5_HDP	(CPSW_STATERAM + 0X14)
+#define CPSW_STATERAM_TX6_HDP	(CPSW_STATERAM + 0X18)
+#define CPSW_STATERAM_TX7_HDP	(CPSW_STATERAM + 0X1c)
+#define CPSW_STATERAM_RX0_HDP	(CPSW_STATERAM + 0X20)
+#define CPSW_STATERAM_RX1_HDP	(CPSW_STATERAM + 0X24)
+#define CPSW_STATERAM_RX2_HDP	(CPSW_STATERAM + 0X28)
+#define CPSW_STATERAM_RX3_HDP	(CPSW_STATERAM + 0X2c)
+#define CPSW_STATERAM_RX4_HDP	(CPSW_STATERAM + 0X30)
+#define CPSW_STATERAM_RX5_HDP	(CPSW_STATERAM + 0X34)
+#define CPSW_STATERAM_RX6_HDP	(CPSW_STATERAM + 0X38)
+#define CPSW_STATERAM_RX7_HDP	(CPSW_STATERAM + 0X3c)
+#define CPSW_STATERAM_TX0_CP	(CPSW_STATERAM + 0X40)
+#define CPSW_STATERAM_TX1_CP	(CPSW_STATERAM + 0X44)
+#define CPSW_STATERAM_TX2_CP	(CPSW_STATERAM + 0X48)
+#define CPSW_STATERAM_TX3_CP	(CPSW_STATERAM + 0X4c)
+#define CPSW_STATERAM_TX4_CP	(CPSW_STATERAM + 0X50)
+#define CPSW_STATERAM_TX5_CP	(CPSW_STATERAM + 0X54)
+#define CPSW_STATERAM_TX6_CP	(CPSW_STATERAM + 0X58)
+#define CPSW_STATERAM_TX7_CP	(CPSW_STATERAM + 0X5c)
+#define CPSW_STATERAM_RX0_CP	(CPSW_STATERAM + 0X60)
+#define CPSW_STATERAM_RX1_CP	(CPSW_STATERAM + 0X64)
+#define CPSW_STATERAM_RX2_CP	(CPSW_STATERAM + 0X68)
+#define CPSW_STATERAM_RX3_CP	(CPSW_STATERAM + 0X6c)
+#define CPSW_STATERAM_RX4_CP	(CPSW_STATERAM + 0X70)
+#define CPSW_STATERAM_RX5_CP	(CPSW_STATERAM + 0X74)
+#define CPSW_STATERAM_RX6_CP	(CPSW_STATERAM + 0X78)
+#define CPSW_STATERAM_RX7_CP	(CPSW_STATERAM + 0X7c)
 
 struct desc {
 	volatile struct desc *next;
@@ -84,6 +130,8 @@ void sleep(void)
 	for (i = 0; i < 0xffff; i++);
 }
 
+#define MAC_ADDR_LO	(0x6785)
+#define MAC_ADDR_HI	(0x94ff3500)
 
 int cpsw_init(void)
 {
@@ -109,34 +157,34 @@ int cpsw_init(void)
 
 	tfp_printf("ALE_CONTROL = %08x\n", readl(CPSW_ALE_CONTROL));
 
-//	writel(0x76543210, CPSW_PORT_P0_CPDMA_TX_PRI_MAP);
-//	writel(0x0, CPSW_PORT_P0_CPDMA_RX_CH_MAP);
-//	writel(0x0, 0x4a100010);
 	writel(1 << CPSW_MDIO_STAT_PORT_EN_P0_STAT_EN, CPSW_MDIO_STAT_PORT_EN);
-	writel(CPSW_ALE_PORTCTL0_PORT_STATE_FORWARD, CPSW_ALE_PORTCTL0);
+	writel(CPSW_ALE_PORTCTL_PORT_STATE_FORWARD, CPSW_ALE_PORTCTL0);
 
 	/* MAC SOFTRESET */
 	tfp_printf("Resetting MAC ...\n");
 	set_and_wait_to_clear(0, CPSW_SL1_SOFT_RESET);
 
-//	writel(0x76543210, 0x4a100da4);
-//	writel(0x33221100, 0x4a100218);
-
 	/* MAC RX_MAXLEN set to 0x5ee */
 	writel(0x5ee, CPSW_SL1_RX_MAXLEN);
 
-	writel(0x94ff3500, 0x4a100224);
-	writel(0x6785, 0x4a100220);
+	writel(MAC_ADDR_HI, CPSW_PORT_P1_SA_HI);
+	writel(MAC_ADDR_LO, CPSW_PORT_P1_SA_LO);
 
+	int mac_lo, mac_hi;
 
-	writel(0x3, 0x4a100d44);
+	mac_lo = readl(CPSW_PORT_P1_SA_LO);
+	mac_hi = readl(CPSW_PORT_P1_SA_HI);
 
-	writel(0x8021, 0x4a100d84);
-	writel(0x1, 0x4a10081c);
-	printf("%d\n", __LINE__);
-	sleep();
+	tfp_printf("Setting MAC addr = %02x:%02x:%02x:%02x:%02x:%02x\n", mac_hi & 0xff, (mac_hi >> 8) & 0xff, (mac_hi >> 16) & 0xff, (mac_hi >> 24) & 0xff, (mac_lo) & 0xff, (mac_lo >> 8) & 0xff);
 
-	writel(0x0, 0x4a100a20);
+	writel(CPSW_ALE_PORTCTL_PORT_STATE_FORWARD, CPSW_ALE_PORTCTL1);
+
+	writel((1 << CPSW_SL1_MACCONTROL_IFCTL_A) | (1 << CPSW_SL1_MACCONTROL_GMII_EN) | (1 << CPSW_SL1_MACCONTROL_FULLDUPLEX), CPSW_SL1_MACCONTROL);
+
+	tfp_printf("Resetting CPSW_CPDMA ...\n");
+	set_and_wait_to_clear(0, CPSW_CPDMA_SOFT_RESET);
+/*
+	writel(0x0, CPSW_STATERAM_RX0_HDP);
 	writel(0x0, 0x4a1008e0);
 	writel(0x0, 0x4a100a60);
 	writel(0x0, 0x4a100a00);
@@ -176,6 +224,7 @@ int cpsw_init(void)
 	writel(0x0, 0x4a100a7c);
 	writel(0x0, 0x4a100a1c);
 	writel(0x0, 0x4a100a5c);
+*/
 	writel(0x1, 0x4a100804);
 	writel(0x1, 0x4a100814);
 
@@ -196,11 +245,10 @@ int cpsw_init(void)
 
 	int pkt_len = rx_desc->flags_pktlen & 0x7ff;
 
-	writel(1, CPSW_CPDMA + 0x04);
-	writel(1, CPSW_CPDMA + 0x14);
+	writel(1, CPSW_CPDMA_TX_CONTROL);
+	writel(1, CPSW_CPDMA_RX_CONTROL);
 
-	tfp_printf("DMASTATUS = %08x\n", readl(CPSW_CPDMA + 0x24));
-	writel(0, CPSW_CPDMA + 0x24);
+	tfp_printf("DMASTATUS = %08x\n", readl(CPSW_CPDMA_DMASTATUS));
 
 	int data, temp;
 
@@ -213,63 +261,6 @@ int cpsw_init(void)
 	rx_desc->bufoff_len = 2000;
 	rx_desc->flags_pktlen = 0x20000000 | 2000;
 	writel((unsigned int)rx_desc, CPSW_STATERAM + 0x20);
-
-#if 0
-	/* soft reset */
-	writel(1, CPSW_WR + 0x4);
-	/* ale enable */
-	tmp = readl(CPSW_ALE + 0x8);
-	tmp |= 0x80000000;
-	writel(tmp, CPSW_ALE + 0x8);
-	
-	/* ale clear */
-	tmp = readl(CPSW_ALE + 0x8);
-	tmp |= 0x40000000;
-	writel (tmp, CPSW_ALE + 0x8);
-
-	/* vlan unaware */
-	tmp = readl(CPSW_ALE + 0x8);
-	tmp |= 0x4;
-	writel(tmp, CPSW_ALE + 0x8);
-
-	/* cpdma tx priority mapping */
-	writel(0x76543210, CPSW_PORT + 0x1c);
-	/* cpdma rx channel mapping */
-	writel(0x0, CPSW_PORT + 0x20);
-
-	/* disable priority elevation */
-	writel(0x0, CPSW_SS + 0x10);
-
-	/* enable port statistics */
-	writel(0x1, CPSW_SS + 0xc);
-
-	/* set ale to forward mode */
-	tmp = readl(CPSW_ALE + 0x40);
-	tmp |= 0x3;
-	writel(tmp, CPSW_ALE + 0x40);
-
-	/*
-	rx_desc[1].next = NULL;
-	rx_desc[1].bufptr = (uint32_t)0x80008000;
-	rx_desc[1].bufoff_len = 2000;
-	rx_desc[1].flags_pktlen = 0x20000000;
-
-	writel(&rx_desc[0], CPSW_STATERAM + 0x20);
-	writel(&rx_desc[1], CPSW_STATERAM + 0x24);
-
-	writel(0x1, CPSW_CPDMA + 0x14);
-
-	while (1) {
-		tfp_printf("Waiting for packet\n");
-
-		while ((rx_desc[0].flags_pktlen & 0x20000000) == 0x20000000);
-
-		int len = rx_desc[0].flags_pktlen & 0x000007ff;
-
-		tfp_printf("%d len\n", len);
-	}
-*/
-#endif
 }
 
 	
