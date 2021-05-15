@@ -18,19 +18,18 @@ CONFIG_COREDUMP=y
 #
 # IRQ
 #
-CONFIG_IRQ=y
-# CONFIG_DEBUG_IRQ is not set
+# CONFIG_IRQ is not set
 
 #
 # Drivers
 #
-CONFIG_TIMER=y
+# CONFIG_TIMER is not set
 
 #
 # GPIO
 #
 CONFIG_GPIO=y
-# CONFIG_DEBUG_GPIO is not set
+CONFIG_DEBUG_GPIO=y
 CONFIG_DDR=y
 CONFIG_SERIAL_UART=y
 
