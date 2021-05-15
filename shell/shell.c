@@ -216,6 +216,12 @@ void shell_start(void)
 		ret = do_gpio(argc, argv);
 	    }
 #endif /* GPIO && SHELL_GPIO */
+	} else if (CMD_CMP(cmd, "ethstats") == (0)) {
+	    if (argc != 1) {
+		puts("syntax: ethstats\n");
+	    } else {
+		ret = do_eth_stats();
+	    }
 	} else {
 	    puts("unknown command\n");
 	}

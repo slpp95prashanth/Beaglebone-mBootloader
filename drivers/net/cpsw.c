@@ -3,6 +3,7 @@
 #include <asm/io.h>
 #include <asm/types.h>
 #include <net/cpsw.h>
+#include <net/cpsw-stats.h>
 
 #define MAC_ADDR_LO	(0x6785)
 #define MAC_ADDR_HI	(0x94ff3500)
@@ -111,6 +112,11 @@ void cpsw_cpdma_enable_tx(void)
 {
 	printf("Enabling cpdma tx\n");
 	writel(1 << CPSW_CPDMA_TX_CONTROL_TX_EN_BIT, CPSW_CPDMA_TX_CONTROL);
+}
+
+void do_eth_stats(void)
+{
+	cpsw_stats_rx();
 }
 
 void cpsw_recv(void)
