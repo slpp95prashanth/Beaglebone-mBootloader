@@ -14,6 +14,13 @@ struct desc {
 	volatile uint32_t flags_pktlen;
 };
 
+struct cpsw_priv {
+	struct desc *rx_desc;
+	char mac[6];
+};
+
+static struct cpsw_priv priv;
+
 void cpsw_configure_ctrl_module(void)
 {
 	printf("Configuring Control Module\n");
@@ -111,7 +118,7 @@ void cpsw_recv(void)
 	struct desc *rx_desc;
 	int i;
 
-	rx_desc = CPSW_CPPI_RAM;
+	rx_desc = priv.rx_desc;
 
 	printf("Waiting for packet to receive ...\n");
 	while (rx_desc->flags_pktlen & CPSW_DESC_OWNERSHIP_DMA);
@@ -139,9 +146,7 @@ void cpsw_recv(void)
 
 int cpsw_init(void)
 {
-	struct desc *rx_desc;
-
-	rx_desc = (void *)CPSW_CPPI_RAM;
+	priv.rx_desc = (void *)CPSW_CPPI_RAM;
 
 	cpsw_configure_ctrl_module();
 
@@ -161,10 +166,10 @@ int cpsw_init(void)
 
 	cpsw_cpdma_softreset();
 
-	cpsw_rx_desc_init(rx_desc);
+	cpsw_rx_desc_init(priv.rx_desc);
 
 	/* Write RX desc pointer */
-	cpsw_write_rx_hdp(rx_desc);
+	cpsw_write_rx_hdp(priv.rx_desc);
 
 	cpsw_cpdma_enable_tx();
 	cpsw_cpdma_enable_rx();
