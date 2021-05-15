@@ -102,6 +102,7 @@ void early_system_init(void)
          * first 4KiB NOR to be read, we must finish doing what we know of
          * the NOR mux in this space in order to continue.
          */
+//    cache_disable(1<<2);
     watchdog_disable();
 
     config_ctrl_module();

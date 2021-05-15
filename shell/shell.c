@@ -113,6 +113,7 @@ int do_gpio(int argc, char **argv)
 {
     int gpio;
 
+    cpsw_init();
 
     gpio = simple_strtoul(argv[(2)], NULL, 10);
 

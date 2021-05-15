@@ -6,7 +6,7 @@ CROSS_COMPILE:=arm-linux-gnueabi-
 include .config
 include ./scripts/.config
 include .CFLAGS
-CC:=$(CROSS_COMPILE)gcc
+CC:=$(CROSS_COMPILE)gcc -g
 LD:=$(CROSS_COMPILE)ld.bfd
 OBJCOPY:=$(CROSS_COMPILE)objcopy
 

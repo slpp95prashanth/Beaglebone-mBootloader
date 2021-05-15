@@ -19,8 +19,8 @@ lowlevel_init:
         bl      board_init_f
         pop     {ip,pc}
 #.type lowlevel_init STT_FUNC #;(lowlevel_init)
-
 #.global SYMBOL_NAME(cpu_init_cp15)
+#define CONFIG_SYS_ICACHE_OFF
 cpu_init_cp15:
         /*
          * Invalidate L1 I/D
