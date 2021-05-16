@@ -18,7 +18,8 @@ CONFIG_COREDUMP=y
 #
 # IRQ
 #
-# CONFIG_IRQ is not set
+CONFIG_IRQ=y
+CONFIG_DEBUG_IRQ=y
 
 #
 # Drivers

@@ -119,6 +119,38 @@ void do_eth_stats(void)
 	cpsw_stats_rx();
 }
 
+void cpsw_check_dma_status(void)
+{
+	int cpsw_dma_status = readl(CPSW_CPDMA_DMASTATUS);
+
+	printf("DMASTATUS = %08x\n", cpsw_dma_status);
+
+	if (cpsw_dma_status & CPSW_CPDMA_DMASTATUS_IDLE) {
+		printf("DMA Idle\n");
+		return ;
+	}
+
+	if (cpsw_dma_status & 0xf000 != 0) {
+		switch(cpsw_dma_status & 0xf000) {
+			case 0x0010:
+				printf(CPSW_CPDMA_RX_HOST_ERR_0010);
+				break;
+			case 0x0100:
+				printf(CPSW_CPDMA_RX_HOST_ERR_0100);
+				break;
+			case 0x0101:
+				printf(CPSW_CPDMA_RX_HOST_ERR_0101);
+				break;
+			case 0x0110:
+				printf(CPSW_CPDMA_RX_HOST_ERR_0110);
+				break;
+			default:
+				printf("Unknown state in CPSW_CPDMA_DMASTATUS_RX_HOST_ERR\n");
+		}
+		return ;
+	}
+}
+
 void cpsw_recv(void)
 {
 	struct desc *rx_desc;
@@ -127,6 +159,8 @@ void cpsw_recv(void)
 	rx_desc = priv.rx_desc;
 
 	printf("Waiting for packet to receive ...\n");
+	printf("flags = %08x\n", rx_desc->flags_pktlen);
+
 	while (rx_desc->flags_pktlen & CPSW_DESC_OWNERSHIP_DMA);
 
 	printf("Rx frames = %08x\n", readl(CPSW_STATS));
@@ -134,7 +168,7 @@ void cpsw_recv(void)
 
 	int pkt_len = rx_desc->flags_pktlen & CPSW_DESC_PKT_LEN_MASK;
 
-	printf("DMASTATUS = %08x\n", readl(CPSW_CPDMA_DMASTATUS));
+	cpsw_check_dma_status();
 
 	int data, temp;
 
