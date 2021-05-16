@@ -154,7 +154,7 @@ void cpsw_check_dma_status(void)
 void cpsw_recv(void)
 {
 	struct desc *rx_desc;
-	int i;
+	int i, pkt_len;
 
 	rx_desc = priv.rx_desc;
 
@@ -166,17 +166,11 @@ void cpsw_recv(void)
 	printf("Rx frames = %08x\n", readl(CPSW_STATS));
 	printf("pkt_len = %08x\n", rx_desc->flags_pktlen & CPSW_DESC_PKT_LEN_MASK);
 
-	int pkt_len = rx_desc->flags_pktlen & CPSW_DESC_PKT_LEN_MASK;
+	pkt_len = rx_desc->flags_pktlen & CPSW_DESC_PKT_LEN_MASK;
 
 	cpsw_check_dma_status();
 
-	int data, temp;
-
-	for (i = 0; i < pkt_len; i = i + 4) {
-		temp = readl(rx_desc->bufptr + i);
-		data = (temp << 24) | ((temp & 0x0000ff00) << 8) | ((temp & 0x00ff0000) >> 8) | ((temp & 0xff000000) >> 24);
-		printf("%08x ", data);
-	}
+	print_packet(rx_desc->bufptr, pkt_len);
 
 	rx_desc->bufoff_len = CPSW_RX_MAX_PKT_LEN;
 	rx_desc->flags_pktlen = CPSW_DESC_OWNERSHIP_DMA | CPSW_RX_MAX_PKT_LEN;
