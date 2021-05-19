@@ -3,10 +3,11 @@
 #include <asm/regs.h>
 #include <asm/io.h>
 #include <gpio/gpio.h>
+#include <asm/prcm.h>
 
 #ifdef SHELL_REGDUMP
 
-int do_regdump(void)
+int do_regdump(int argc, char *argv[])
 {
     int i;
 
@@ -26,78 +27,89 @@ int do_regdump(void)
 }
 
 #endif /* SHELL_REGDUMP */
-
 #ifdef SHELL_MD
 
-int do_md(char *addr)
+int do_md(int argc, char *argv[])
 {
-    unsigned int address, data, len;
+	if (argc != 2) {
+		puts("syntax: md <address>\n");
+		return -1;
+	}
 
-    len = strlen(addr);
+	char *addr = argv[1];
 
-    if (len < 8) {
-	puts("invalid address\n");
-	return -1;
-    }
+	unsigned int address, data, len;
 
-    address = simple_strtoul(addr, NULL, 16);
+	len = strlen(addr);
 
-    data = readl(address);
+	if (check_address_validity(argv[1]) == -1) {
+    		puts("invalid address\n");
+    		return -1;
+	}
+
+	address = simple_strtoul(addr, NULL, 16);
+
+	data = readl(address);
 
 #ifndef DEBUG_PRINTF
-    char str[120] = {};
-    inttostr(data, str, 16);
+    	char str[120] = {};
+    	inttostr(data, str, 16);
 
-    puts(addr);
-    puts(" = ");
-    puts(str);
-    puts("\n");
+    	puts(addr);
+    	puts(" = ");
+    	puts(str);
+    	puts("\n");
 #else
-    printf("%p = %p\n", address, data);
+    	printf("%p = %p\n", address, data);
 #endif
 
-    return 0;
+    	return 0;
 }
 
 #endif /* SHELL_MD */
 
 #ifdef SHELL_MM
 
-int do_mm(char *addr, char *data)
+int do_mm(int argc, char *argv[])
 {
-    unsigned int address, reg;
+	if (argc != 3) {
+		puts("syntax: mm <address> <data>\n");
+		return -1;
+	}
 
-    if (strlen(addr) < 8 && strlen(data) > 8) {
-	puts("invalid argument\n");
-	return -1;
-    }
+    	unsigned int address, data;
 
-    address = simple_strtoul(addr, NULL, 16);
+	if (check_address_validity(argv[1]) == -1) {
+    		puts("invalid address\n");
+    		return -1;
+	}
 
-    reg = simple_strtoul(data, NULL, 16);
 
-    writel(reg, address);
-    writel(reg, address);
+    	address = simple_strtoul(argv[1], NULL, 16);
 
-    reg = readl(address);
+    	data = simple_strtoul(argv[2], NULL, 16);
+
+    	writel(data, address);
+
+    	data = readl(address);
 
 #ifdef DEBUG_PRINTF
 
-    tfp_printf("%p = %x\n", address, reg);
+    	printf("%p = %x\n", address, data);
 #else
 
-    char str[120] = {};
+    	char str[120] = {};
 
-    inttostr(reg, str, 16);
+    	inttostr(data, str, 16);
 
-    puts(addr);
-    puts(" = ");
-    puts(str);
-    puts("\n");
+    	puts(addr);
+    	puts(" = ");
+    	puts(str);
+    	puts("\n");
 
 #endif /* DEBUG_PRINTF */
 
-    return 0;
+   	return 0;
 }
 
 #endif /* SHELL_MM */
@@ -106,48 +118,59 @@ int do_mm(char *addr, char *data)
 
 int do_gpio(int argc, char **argv)
 {
-    int gpio;
+	if (argc != 3) {
+		goto err;
+	}
 
-    cpsw_recv();
+	int gpio;
 
-    gpio = simple_strtoul(argv[(2)], NULL, 10);
+	gpio = simple_strtoul(argv[(2)], NULL, 10);
 
-    if (CMD_CMP(argv[1], "set") == 0) {
-
-	gpio_set(gpio);
-
-    } else if (CMD_CMP(argv[1], "clear") == 0) {
-
-	gpio_clear(gpio);
-
-    } else if (CMD_CMP(argv[1], "in") == 0) {
-
-	gpio_direction_in(gpio);
-
-    } else if (CMD_CMP(argv[1], "out") == 0) {
-
-	gpio_direction_out(gpio);
-
-    } else if (CMD_CMP(argv[1], "get") == 0) {
-
-	printf("gpio %p = %p\n", gpio, (gpio_get(gpio)));
+	if (CMD_CMP(argv[1], "set") == 0) {
+		gpio_set(gpio);
+	} else if (CMD_CMP(argv[1], "clear") == 0) {
+		gpio_clear(gpio);
+	} else if (CMD_CMP(argv[1], "in") == 0) {
+		gpio_direction_in(gpio);
+	} else if (CMD_CMP(argv[1], "out") == 0) {
+		gpio_direction_out(gpio);
+	} else if (CMD_CMP(argv[1], "get") == 0) {
+#ifdef DEBUG_PRINTF
+		printf("gpio %p = %p\n", gpio, (gpio_get(gpio)));
+#endif /* DEBUG_PRINTF */
 #if defined(EXCEPTION) && defined(IRQ)
-    } else if (CMD_CMP(argv[1], "irq") == 0) {
-
-	gpio_irq(gpio, RISING_EDGE);
+	} else if (CMD_CMP(argv[1], "irq") == 0) {
+		gpio_irq(gpio, RISING_EDGE);
 #endif
-    } else {
-	puts("Usage: gpio <[set] [clear] [in] [out] ");
+	} else {
+		goto err;
+	}
+
+	return 0;
+
+err:
+	puts("Usage: gpio <[set] [clear] [get] [in] [out] ");
 #if defined(EXCEPTION) && defined(IRQ)
 	puts("[irq]> ");
 #endif
 	puts("<gpio pin>\n");
 
 	return -1;
-    }
-
-    return 0;
 }
-
 #endif /* GPIO && SHELL_GPIO */
 
+#ifdef SHELL_RESET
+int do_reset(int argc, char *argv[])
+{
+	if (argc == 2 && strncmp(argv[1], "cold", 4) == 0) {
+		reset_cpu(COLD_RESET);
+	} else if (argc == 1) {
+		reset_cpu(WARM_RESET);
+	} else {
+		printf("syntax: reset [cold]\n");
+		return -1;
+	}
+
+	return 0;
+}
+#endif /* SHELL_RESET */
