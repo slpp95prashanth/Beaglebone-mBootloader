@@ -6,7 +6,6 @@ char getc(void)
     char ch;
 
     ch = NS16550_getc();
-    NS16550_putc(ch);		/* illusion of typing char */
 
     return ch;
 }
