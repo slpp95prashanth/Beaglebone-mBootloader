@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <lib/io.h>
+#include <lib/irq.h>
 #include <asm/io.h>
 #include <asm/types.h>
 #include <net/cpsw.h>
@@ -151,12 +152,12 @@ void cpsw_check_dma_status(void)
 	}
 }
 
-void cpsw_recv(void)
+void cpsw_recv(struct cpsw_priv *priv)
 {
 	struct desc *rx_desc;
 	int i, pkt_len;
 
-	rx_desc = priv.rx_desc;
+	rx_desc = priv->rx_desc;
 
 	printf("Waiting for packet to receive ...\n");
 	printf("flags = %08x\n", rx_desc->flags_pktlen);
@@ -172,10 +173,47 @@ void cpsw_recv(void)
 
 	print_packet(rx_desc->bufptr, pkt_len);
 
+	memset(rx_desc->bufptr, '\0', pkt_len);
+
 	rx_desc->bufoff_len = CPSW_RX_MAX_PKT_LEN;
 	rx_desc->flags_pktlen = CPSW_DESC_OWNERSHIP_DMA | CPSW_RX_MAX_PKT_LEN;
 
 	cpsw_write_rx_hdp(rx_desc);
+}
+
+int cpsw_irq(int irq, struct cpsw_priv *priv)
+{
+	if (irq == CPSW_3PGSWRXINT0) {
+		printf("RX_PULSE interrupt received irq number = 0x%x\n", irq);
+
+		cpsw_recv(priv);
+
+		/* ACK the DMA processed descriptor by writing the descriptor address to completion pointer */
+		writel(CPSW_CPPI_RAM, CPSW_STATERAM_RX0_CP);
+
+		/* End of Interrput vector is 1 for RX_PULSE interrupt */
+		writel(CPSW_CPDMA_EOI_VECTOR_RX_PULSE, CPSW_CPDMA_EOI_VECTOR);
+
+		return 0;
+	}
+
+}
+
+void cpsw_enable_rx_int(void)
+{
+	/* Enable rx interrupt for channel 0 */
+	writel(1 << CPSW_CPDMA_RX_INTMASK_SET_RX0_PEND_MASK_BIT, CPSW_CPDMA_RX_INTMASK_SET);
+
+	/* Enable RX_PULSE interrupt */
+	writel(1, CPSW_WR_C0_RX_EN);
+}
+
+void cpsw_set_rx_int(void)
+{
+	printf("Enabling CPSW RX interrupt\n");
+	request_irq(CPSW_3PGSWRXINT0, cpsw_irq, &priv);
+
+	cpsw_enable_rx_int();
 }
 
 int cpsw_init(void)
@@ -204,6 +242,8 @@ int cpsw_init(void)
 
 	/* Write RX desc pointer */
 	cpsw_write_rx_hdp(priv.rx_desc);
+
+	cpsw_set_rx_int();
 
 	cpsw_cpdma_enable_tx();
 	cpsw_cpdma_enable_rx();
