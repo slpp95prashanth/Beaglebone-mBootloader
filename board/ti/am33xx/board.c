@@ -7,7 +7,6 @@
 #include "clock.h"
 #include "ctrl-module.h"
 #include <stdio.h>
-#include <cmd.h>
 #include <net/cpsw.h>
 
 extern void asm_exception(void);

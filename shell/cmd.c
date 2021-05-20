@@ -1,9 +1,12 @@
 #include <stdio.h>
-#include <cmd.h>
+#include <lib/io.h>
+#include "cmd.h"
 #include <asm/regs.h>
 #include <asm/io.h>
 #include <gpio/gpio.h>
 #include <asm/prcm.h>
+
+int check_address_validity(char *);
 
 #ifdef SHELL_REGDUMP
 
@@ -38,9 +41,7 @@ int do_md(int argc, char *argv[])
 
 	char *addr = argv[1];
 
-	unsigned int address, data, len;
-
-	len = strlen(addr);
+	unsigned int address, data;
 
 	if (check_address_validity(argv[1]) == -1) {
     		puts("invalid address\n");

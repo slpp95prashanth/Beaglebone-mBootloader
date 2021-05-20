@@ -1,5 +1,5 @@
 #include <lib/io.h>
-#include <cmd.h>
+#include "cmd.h"
 #include <lib/string.h>
 #include <asm/types.h>
 #include <stdio.h>
@@ -101,7 +101,7 @@ void shell_start(void)
 		} else if (CMD_CMP(cmd, "reset") == (0)) {
 			do_reset(argc, argv);
 #endif /* SHELL_RESET */
-#ifdef GPIO && defined SHELL_GPIO
+#if defined GPIO && defined SHELL_GPIO
 		} else if (CMD_CMP(cmd, "gpio") == (0)) {
 			ret = do_gpio(argc, argv);
 #endif /* GPIO && SHELL_GPIO */
