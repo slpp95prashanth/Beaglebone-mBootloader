@@ -1,13 +1,8 @@
 #include <asm/types.h>
 #include <stdio.h>
+#include <net/net.h>
 
-struct ethhdr {
-	unsigned char dest[6];
-	unsigned char src[6];
-	uint16_t proto;
-};
-
-void print_mac_address(char *mac)
+void print_mac_address(unsigned char *mac)
 {
 	int i;
 
@@ -18,7 +13,7 @@ void print_mac_address(char *mac)
 
 void print_ethhdr_header(char *buf)
 {
-	struct ethhdr *eth = buf;
+	struct ethhdr *eth = (struct ethhdr *)buf;
 
 	printf("dest-mac = ");
 	print_mac_address(eth->dest);
@@ -28,7 +23,7 @@ void print_ethhdr_header(char *buf)
 	printf("\nprotocol = 0x%02x\n", eth->proto);
 }
 
-void ethernet_input(char *pkt, size_t len)
+void ethernet_input(char *pkt, uint32_t len)
 {
 	print_ethhdr_header(pkt);
 }

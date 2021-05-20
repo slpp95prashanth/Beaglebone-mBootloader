@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <lib/io.h>
 #include <lib/irq.h>
+#include <lib/string.h>
 #include <asm/io.h>
 #include <asm/types.h>
 #include <net/cpsw.h>
 #include <net/cpsw-stats.h>
 #include <net/debug.h>
+#include <net/net.h>
 
 #define MAC_ADDR_LO	(0x6785)
 #define MAC_ADDR_HI	(0x94ff3500)
@@ -156,7 +158,7 @@ static void cpsw_check_dma_status(void)
 static void cpsw_recv(struct cpsw_priv *priv)
 {
 	struct desc *rx_desc;
-	int i, pkt_len;
+	int pkt_len;
 
 	rx_desc = priv->rx_desc;
 
@@ -174,9 +176,9 @@ static void cpsw_recv(struct cpsw_priv *priv)
 
 	print_packet((void *)rx_desc->bufptr, pkt_len);
 
-	ethernet_input(rx_desc->bufptr, pkt_len);
+	ethernet_input((char *)rx_desc->bufptr, pkt_len);
 
-	memset(rx_desc->bufptr, '\0', pkt_len);
+	memset((void *)rx_desc->bufptr, '\0', pkt_len);
 
 	rx_desc->bufoff_len = CPSW_RX_MAX_PKT_LEN;
 	rx_desc->flags_pktlen = CPSW_DESC_OWNERSHIP_DMA | CPSW_RX_MAX_PKT_LEN;
@@ -198,9 +200,9 @@ static int cpsw_irq(int irq, void *data)
 
 		/* End of Interrput vector is 1 for RX_PULSE interrupt */
 		writel(CPSW_CPDMA_EOI_VECTOR_RX_PULSE, CPSW_CPDMA_EOI_VECTOR);
-
-		return 0;
 	}
+
+	return 0;
 
 }
 
@@ -230,6 +232,7 @@ int cpsw_init(void)
 	cpsw_configure_ctrl_module();
 
 	cpsw_ss_softreset();
+	cpsw_sl1_softreset();
 	cpsw_cpdma_softreset();
 
 	cpsw_mdio_init();
