@@ -12,6 +12,7 @@
 extern void asm_exception(void);
 extern void irq_init(void);
 extern void ddr_init(void);
+extern void shell_start(void);
 
 typedef unsigned int long ulong;
 

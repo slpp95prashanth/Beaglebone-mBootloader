@@ -13,13 +13,14 @@ int strlen(const char *str)
 
 char *strncpy(char *dest, const char *src, int count)
 {
-    char *tmp = dest;
+	char *tmp = dest;
 
-    while (count) {
-	if ((*tmp = *src) != '\0');
-	    src++;
-	    tmp++;
-	    count--;
+	while (count) {
+		if ((*tmp = *src) != '\0') {
+			src++;
+			tmp++;
+			count--;
+		}
 	}
 
     return dest;

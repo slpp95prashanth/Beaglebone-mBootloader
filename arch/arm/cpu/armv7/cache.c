@@ -49,6 +49,8 @@
 #define ARMV7_DCACHE_INVAL_RANGE        3
 #define ARMV7_DCACHE_CLEAN_INVAL_RANGE  4
 
+void v7_maint_dcache_all(uint32_t);
+
 static inline int32_t log_2_n_round_up(uint32_t n)
 {
         int32_t log2n = -1;
