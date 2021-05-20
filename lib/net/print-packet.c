@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-void print_packet(void *buf, size_t len)
+void print_packet(void *buf, uint32_t len)
 {
 	int data, temp, i;
 

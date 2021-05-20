@@ -8,6 +8,40 @@
 
 #ifdef SHELL
 
+char cmds[][MAX_CMD_LEN] = {	\
+		"md",	\
+		"mm",	\
+		"regdump",	\
+		"ethstats",	\
+		"gpio",	\
+		"reset",	\
+		""
+		};
+
+void do_help(void)
+{
+	int i;
+
+	for(i = 0; strlen(cmds[i]) != 0; i++) {
+		printf("%s\n", cmds[i]);
+	}
+
+	printf("\n");
+}
+
+void cmd_tab_completion(char *cmd, int i)
+{
+	int j;
+
+	printf("\n");
+
+	for (j = 0; strlen(cmds[j]) != 0; j++) {
+		if (strncmp(cmd, cmds[j], i)  == 0) {
+			printf("%s\n", cmds[j]);
+		}
+	}
+}
+			
 void shell_start(void)
 {
 	char cmd[MAX_CMD_LEN] = {}, *argv[MAX_CMD_ARGS], ch;
@@ -36,6 +70,8 @@ void shell_start(void)
 
 				cmd[i] = '\0';
 				break;
+			} else if (ch == '\t') {		/* tab completion */
+				cmd_tab_completion(cmd, i);
 			} else {
 				cmd[i++] = ch;
 			}
@@ -71,6 +107,8 @@ void shell_start(void)
 #endif /* GPIO && SHELL_GPIO */
 		} else if (CMD_CMP(cmd, "ethstats") == (0)) {
 			do_eth_stats();
+		} else if (CMD_CMP(cmd, "help") == (0) || CMD_CMP(cmd, "?") == (0)) {
+			do_help();
 		} else {
 	    	puts("unknown command\n");
 		}

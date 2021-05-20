@@ -5,9 +5,12 @@
 #include <asm/types.h>
 #include <net/cpsw.h>
 #include <net/cpsw-stats.h>
+#include <net/debug.h>
 
 #define MAC_ADDR_LO	(0x6785)
 #define MAC_ADDR_HI	(0x94ff3500)
+
+extern void eth_init(void);
 
 struct desc {
 	volatile struct desc *next;
@@ -21,21 +24,19 @@ struct cpsw_priv {
 	char mac[6];
 };
 
-static struct cpsw_priv priv;
-
-void cpsw_configure_ctrl_module(void)
+static void cpsw_configure_ctrl_module(void)
 {
 	printf("Configuring Control Module\n");
 	eth_init();
 }
 
-void cpsw_mdio_init(void)
+static void cpsw_mdio_init(void)
 {
 	/* MDIO CLK DIV set to 0xff */
 	writel((1 << CPSW_MDIO_CONTROL_ENABLE_BIT) | 0xff, CPSW_MDIO_CONTROL);
 }
 
-void cpsw_ale_init(void)
+static void cpsw_ale_init(void)
 {
 	printf("COnfiguring ALE\n");
 	__read_and_write(1, CPSW_ALE_CONTROL_ALE_ENABLE_BIT, CPSW_ALE_CONTROL);
@@ -50,7 +51,7 @@ void cpsw_ale_init(void)
 
 }
 
-void cpsw_set_mac(void)
+static void cpsw_set_mac(void)
 {
 	int mac_lo, mac_hi;
 
@@ -63,53 +64,53 @@ void cpsw_set_mac(void)
 	printf("MAC addr = %02x:%02x:%02x:%02x:%02x:%02x\n", mac_hi & 0xff, (mac_hi >> 8) & 0xff, (mac_hi >> 16) & 0xff, (mac_hi >> 24) & 0xff, (mac_lo) & 0xff, (mac_lo >> 8) & 0xff);
 }
 
-void cpsw_ss_softreset(void)
+static void cpsw_ss_softreset(void)
 {
 	printf("Resetting CPSW_SS ...\n");
 	set_and_wait_to_clear(0, CPSW_SS_SOFT_RESET);
 }
 
-void cpsw_cpdma_softreset(void)
+static void cpsw_cpdma_softreset(void)
 {
 	printf("Resetting CPSW_CPDMA ...\n");
 	set_and_wait_to_clear(0, CPSW_CPDMA_SOFT_RESET);
 }
 
-void cpsw_sl1_softreset(void)
+static void cpsw_sl1_softreset(void)
 {
 	/* MAC SOFTRESET */
 	printf("Resetting MAC ...\n");
 	set_and_wait_to_clear(0, CPSW_SL1_SOFT_RESET);
 }
 
-void cpsw_write_rx_hdp(void *desc)
+static void cpsw_write_rx_hdp(void *desc)
 {
 	printf("Write RX head desc pointer  = %08x\n", desc);
 	writel((unsigned int)desc, CPSW_STATERAM_RX0_HDP);
 }
 
-void *rx_buffer_alloc(size_t size)
+static void *rx_buffer_alloc(size_t size)
 {
 	return (void *)0x80000000;
 }
 
-void cpsw_rx_desc_init(struct desc *desc)
+static void cpsw_rx_desc_init(struct desc *desc)
 {
 	struct desc *rx_desc = desc;
 
 	rx_desc->next = NULL;
-	rx_desc->bufptr = rx_buffer_alloc(CPSW_RX_MAX_PKT_LEN);
+	rx_desc->bufptr = (uint32_t)rx_buffer_alloc(CPSW_RX_MAX_PKT_LEN);
 	rx_desc->bufoff_len = CPSW_RX_MAX_PKT_LEN;
 	rx_desc->flags_pktlen = CPSW_DESC_OWNERSHIP_DMA | CPSW_RX_MAX_PKT_LEN;
 }
 
-void cpsw_cpdma_enable_rx(void)
+static void cpsw_cpdma_enable_rx(void)
 {
 	printf("Enabling cpdma rx\n");
 	writel(1 << CPSW_CPDMA_RX_CONTROL_RX_EN_BIT, CPSW_CPDMA_RX_CONTROL);
 }
 
-void cpsw_cpdma_enable_tx(void)
+static void cpsw_cpdma_enable_tx(void)
 {
 	printf("Enabling cpdma tx\n");
 	writel(1 << CPSW_CPDMA_TX_CONTROL_TX_EN_BIT, CPSW_CPDMA_TX_CONTROL);
@@ -120,7 +121,7 @@ void do_eth_stats(void)
 	cpsw_stats_rx();
 }
 
-void cpsw_check_dma_status(void)
+static void cpsw_check_dma_status(void)
 {
 	int cpsw_dma_status = readl(CPSW_CPDMA_DMASTATUS);
 
@@ -131,7 +132,7 @@ void cpsw_check_dma_status(void)
 		return ;
 	}
 
-	if (cpsw_dma_status & 0xf000 != 0) {
+	if ((cpsw_dma_status & 0xf000) != 0) {
 		switch(cpsw_dma_status & 0xf000) {
 			case 0x0010:
 				printf(CPSW_CPDMA_RX_HOST_ERR_0010);
@@ -152,7 +153,7 @@ void cpsw_check_dma_status(void)
 	}
 }
 
-void cpsw_recv(struct cpsw_priv *priv)
+static void cpsw_recv(struct cpsw_priv *priv)
 {
 	struct desc *rx_desc;
 	int i, pkt_len;
@@ -171,7 +172,9 @@ void cpsw_recv(struct cpsw_priv *priv)
 
 	cpsw_check_dma_status();
 
-	print_packet(rx_desc->bufptr, pkt_len);
+	print_packet((void *)rx_desc->bufptr, pkt_len);
+
+	ethernet_input(rx_desc->bufptr, pkt_len);
 
 	memset(rx_desc->bufptr, '\0', pkt_len);
 
@@ -181,8 +184,10 @@ void cpsw_recv(struct cpsw_priv *priv)
 	cpsw_write_rx_hdp(rx_desc);
 }
 
-int cpsw_irq(int irq, struct cpsw_priv *priv)
+static int cpsw_irq(int irq, void *data)
 {
+	struct cpsw_priv *priv = data;
+
 	if (irq == CPSW_3PGSWRXINT0) {
 		printf("RX_PULSE interrupt received irq number = 0x%x\n", irq);
 
@@ -199,7 +204,7 @@ int cpsw_irq(int irq, struct cpsw_priv *priv)
 
 }
 
-void cpsw_enable_rx_int(void)
+static void cpsw_enable_rx_int(void)
 {
 	/* Enable rx interrupt for channel 0 */
 	writel(1 << CPSW_CPDMA_RX_INTMASK_SET_RX0_PEND_MASK_BIT, CPSW_CPDMA_RX_INTMASK_SET);
@@ -208,16 +213,18 @@ void cpsw_enable_rx_int(void)
 	writel(1, CPSW_WR_C0_RX_EN);
 }
 
-void cpsw_set_rx_int(void)
+static void cpsw_register_rx_int(struct cpsw_priv *priv)
 {
 	printf("Enabling CPSW RX interrupt\n");
-	request_irq(CPSW_3PGSWRXINT0, cpsw_irq, &priv);
+	request_irq(CPSW_3PGSWRXINT0, cpsw_irq, priv);
 
 	cpsw_enable_rx_int();
 }
 
 int cpsw_init(void)
 {
+	static struct cpsw_priv priv;
+
 	priv.rx_desc = (void *)CPSW_CPPI_RAM;
 
 	cpsw_configure_ctrl_module();
@@ -228,6 +235,8 @@ int cpsw_init(void)
 	cpsw_mdio_init();
 
 	cpsw_ale_init();
+
+	__read_and_write(1, 8, CPSW_ALE_CONTROL);
 
 	/* MAC CPSW_RX_MAXLEN set to 0x5ee */
 	writel(CPSW_RX_MAX_PKT_LEN, CPSW_SL1_RX_MAXLEN);
@@ -243,9 +252,11 @@ int cpsw_init(void)
 	/* Write RX desc pointer */
 	cpsw_write_rx_hdp(priv.rx_desc);
 
-	cpsw_set_rx_int();
+	cpsw_register_rx_int(&priv);
 
 	cpsw_cpdma_enable_tx();
 	cpsw_cpdma_enable_rx();
+
+	return 0;
 }
 

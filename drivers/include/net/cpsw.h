@@ -81,6 +81,8 @@
 /* CPSW_ALE CONTROL*/
 #define CPSW_ALE_CONTROL_ALE_ENABLE_BIT	(31)
 #define CPSW_ALE_CONTROL_ALE_TABLE_CLEAR_BIT	(30)
+#define CPSW_ALE_CONTROL_BYPASS	(4)
+#define CPSW_ALE_CONTROL_EN_P0_UNI_FLOOD	(8)
 
 /* CPSW_ALE_PORTCTL */
 #define CPSW_ALE_PORTCTL_PORT_STATE_FORWARD	(3)
@@ -137,5 +139,7 @@
 
 /* CPSW RX_PULSE interrupt number */
 #define CPSW_3PGSWRXINT0	(41)
+
+int cpsw_init(void);
 
 #endif /* _NET_CPSW_H */
