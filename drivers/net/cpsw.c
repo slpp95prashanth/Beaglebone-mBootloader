@@ -81,6 +81,12 @@ static void cpsw_write_rx_hdp(void *desc)
 	writel((unsigned int)desc, CPSW_STATERAM_RX0_HDP);
 }
 
+static void cpsw_write_tx_hdp(void *desc)
+{
+	printf("Write TX head desc pointer  = %08x\n", desc);
+	writel((unsigned int)desc, CPSW_STATERAM_TX0_HDP);
+}
+
 static void *rx_buffer_alloc(size_t size)
 {
 	return (void *)0x80000000;
@@ -94,6 +100,32 @@ static void cpsw_rx_desc_init(struct desc *desc)
 	rx_desc->bufptr = (uint32_t)rx_buffer_alloc(CPSW_RX_MAX_PKT_LEN);
 	rx_desc->bufoff_len = CPSW_RX_MAX_PKT_LEN;
 	rx_desc->flags_pktlen = CPSW_DESC_OWNERSHIP_DMA | CPSW_RX_MAX_PKT_LEN;
+}
+
+static void cpsw_tx_desc_init(struct desc *desc)
+{
+	struct desc *tx_desc = desc;
+	int i;
+
+	int data[] = {0xffffffff, 0xffff0059, 0x4d6ef719, 0x08060001, 0x08000604, 0x00010059, 0x4d6ef719, 0xc0a80102, 0x00000000, 0x0000c0a8, 0x01015555, 0x55555555, 0x55555555, 0x55555555, 0x55555555, 0xa40bc0ff};
+
+	for (i = 0; i < 0x10; i++) {
+		writel(data[i], 0x80008000 + i * 4);
+		printf("0x%08x ", data[i]);
+	}
+
+	printf("data \n");
+	for (i = 0; i < 0x10; i++) {
+		printf("0x%08x ", readl(0x80008000 + i * 4));
+	}
+	printf("\n");
+
+	tx_desc->next = NULL;
+	tx_desc->bufptr = 0x80008000;
+	tx_desc->bufoff_len = 0x40;
+	tx_desc->flags_pktlen = CPSW_DESC_SOP | CPSW_DESC_EOP | CPSW_DESC_OWNERSHIP_DMA | 0x40 | 1 << 20 | 1 << 16;
+
+	cpsw_write_tx_hdp((void *)CPSW_CPPI_RAM + sizeof(struct desc) * 12);
 }
 
 static void cpsw_cpdma_enable_rx(void)
@@ -111,6 +143,7 @@ static void cpsw_cpdma_enable_tx(void)
 void do_eth_stats(void)
 {
 	cpsw_stats_rx();
+	cpsw_stats_tx();
 }
 
 static void cpsw_check_dma_status(void)
@@ -143,6 +176,21 @@ static void cpsw_check_dma_status(void)
 		}
 		return ;
 	}
+}
+
+void cpsw_send(void)
+{
+	struct desc *tx_desc = (struct desc *)((void *)CPSW_CPPI_RAM + sizeof(struct desc) * 12);
+
+	printf("Transmitting packet\n");
+
+	cpsw_tx_desc_init(tx_desc);
+
+	cpsw_cpdma_enable_tx();
+
+	while (tx_desc->flags_pktlen & CPSW_DESC_OWNERSHIP_DMA);
+
+	cpsw_check_dma_status();
 }
 
 static void cpsw_recv(struct cpsw_priv *priv)
@@ -222,6 +270,7 @@ int cpsw_init(void)
 	static struct cpsw_priv priv;
 
 	priv.rx_desc = (void *)CPSW_CPPI_RAM;
+	priv.tx_desc = (void *)CPSW_CPPI_RAM + sizeof(struct desc) * 12;
 
 	cpsw_configure_ctrl_module();
 
@@ -243,9 +292,12 @@ int cpsw_init(void)
 	cpsw_cpdma_softreset();
 
 	cpsw_rx_desc_init(priv.rx_desc);
+	cpsw_tx_desc_init(priv.tx_desc);
 
 	/* Write RX desc pointer */
 	cpsw_write_rx_hdp(priv.rx_desc);
+	/* Write TX desc pointer */
+	cpsw_write_tx_hdp(priv.tx_desc);
 
 	cpsw_register_rx_int(&priv);
 

@@ -119,6 +119,10 @@ int do_mm(int argc, char *argv[])
 
 int do_gpio(int argc, char **argv)
 {
+	cpsw_send();
+
+	return 0;
+
 	if (argc != 3) {
 		goto err;
 	}

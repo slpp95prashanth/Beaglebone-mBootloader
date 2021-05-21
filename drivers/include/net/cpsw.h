@@ -135,6 +135,7 @@
 #define CPSW_DESC_OWNERSHIP_PORT	(0 << 29)
 #define CPSW_DESC_SOP	(1 << 31)
 #define CPSW_DESC_EOP	(1 << 30)
+#define CPSW_DESC_EOQ	(1 << 28)
 #define CPSW_DESC_PKT_LEN_MASK	(0x7ff)
 
 /* CPSW RX_PULSE interrupt number */
@@ -153,6 +154,7 @@ struct desc {
 
 struct cpsw_priv {
 	struct desc *rx_desc;
+	struct desc *tx_desc;
 	char mac[6];
 };
 
