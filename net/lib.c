@@ -7,7 +7,6 @@
 
 uint32_t ntohl(uint32_t data)
 {
-	printf("0x%08x 0x%08x\n", ((byteswap16(data) << 16) & 0xffff0000), ((byteswap16(data >> 16)) & 0x0000ffff));
 	return (((byteswap16(data) << 16) & 0xffff0000) | ((byteswap16(data >> 16)) & 0x0000ffff));
 }
 
@@ -15,3 +14,9 @@ uint16_t ntohs(uint16_t data)
 {
 	return byteswap16(data);
 }
+
+uint32_t htonl(uint32_t data)
+{
+	return (((byteswap16(data) << 16) & 0xffff0000) | ((byteswap16(data >> 16)) & 0x0000ffff));
+}
+

@@ -110,7 +110,7 @@ static void cpsw_tx_desc_init(struct desc *desc)
 	int data[] = {0xffffffff, 0xffff0059, 0x4d6ef719, 0x08060001, 0x08000604, 0x00010059, 0x4d6ef719, 0xc0a80102, 0x00000000, 0x0000c0a8, 0x01015555, 0x55555555, 0x55555555, 0x55555555, 0x55555555, 0xa40bc0ff};
 
 	for (i = 0; i < 0x10; i++) {
-		writel(data[i], 0x80008000 + i * 4);
+		writel(htonl(data[i]), 0x80008000 + i * 4);
 		printf("0x%08x ", data[i]);
 	}
 
@@ -178,14 +178,20 @@ static void cpsw_check_dma_status(void)
 	}
 }
 
-void cpsw_send(void)
+void cpsw_send(char *buf, uint32_t len)
 {
 	struct desc *tx_desc = (struct desc *)((void *)CPSW_CPPI_RAM + sizeof(struct desc) * 12);
 
 	printf("Transmitting packet\n");
 
 	cpsw_tx_desc_init(tx_desc);
-
+/*
+	if (buf != NULL) {
+		tx_desc->bufptr = buf;
+		tx_desc->bufoff_len = len;
+		tx_desc->flags_pktlen = (tx_desc->flags_pktlen & (~0x7ff)) | len;
+	}
+*/
 	cpsw_cpdma_enable_tx();
 
 	while (tx_desc->flags_pktlen & CPSW_DESC_OWNERSHIP_DMA);

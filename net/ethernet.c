@@ -53,6 +53,7 @@ void ethernet_input(char *pkt, uint32_t len)
 		print_ipv4_header(pkt + sizeof(struct ethhdr));
 		break;
 	case 0x0806:
+		cpsw_send(pkt, len);
 		print_arp_header(pkt + sizeof(struct ethhdr));
 		break;
 	default:

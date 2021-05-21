@@ -119,7 +119,7 @@ int do_mm(int argc, char *argv[])
 
 int do_gpio(int argc, char **argv)
 {
-	cpsw_send();
+	cpsw_send(NULL, 0);
 
 	return 0;
 
