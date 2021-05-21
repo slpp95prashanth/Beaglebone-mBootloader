@@ -81,8 +81,8 @@
 /* CPSW_ALE CONTROL*/
 #define CPSW_ALE_CONTROL_ALE_ENABLE_BIT	(31)
 #define CPSW_ALE_CONTROL_ALE_TABLE_CLEAR_BIT	(30)
-#define CPSW_ALE_CONTROL_BYPASS	(4)
-#define CPSW_ALE_CONTROL_EN_P0_UNI_FLOOD	(8)
+#define CPSW_ALE_CONTROL_BYPASS_BIT	(4)
+#define CPSW_ALE_CONTROL_EN_P0_UNI_FLOOD_BIT	(8)
 
 /* CPSW_ALE_PORTCTL */
 #define CPSW_ALE_PORTCTL_PORT_STATE_FORWARD	(3)
@@ -141,5 +141,19 @@
 #define CPSW_3PGSWRXINT0	(41)
 
 int cpsw_init(void);
+
+extern void eth_init(void);
+
+struct desc {
+	volatile struct desc *next;
+	volatile uint32_t bufptr;
+	volatile uint32_t bufoff_len;
+	volatile uint32_t flags_pktlen;
+};
+
+struct cpsw_priv {
+	struct desc *rx_desc;
+	char mac[6];
+};
 
 #endif /* _NET_CPSW_H */

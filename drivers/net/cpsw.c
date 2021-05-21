@@ -12,24 +12,29 @@
 #define MAC_ADDR_LO	(0x6785)
 #define MAC_ADDR_HI	(0x94ff3500)
 
-extern void eth_init(void);
-
-struct desc {
-	volatile struct desc *next;
-	volatile uint32_t bufptr;
-	volatile uint32_t bufoff_len;
-	volatile uint32_t flags_pktlen;
-};
-
-struct cpsw_priv {
-	struct desc *rx_desc;
-	char mac[6];
-};
-
 static void cpsw_configure_ctrl_module(void)
 {
 	printf("Configuring Control Module\n");
 	eth_init();
+}
+
+static void cpsw_ss_softreset(void)
+{
+	printf("Resetting CPSW_SS ...\n");
+	set_and_wait_to_clear(0, CPSW_SS_SOFT_RESET);
+}
+
+static void cpsw_cpdma_softreset(void)
+{
+	printf("Resetting CPSW_CPDMA ...\n");
+	set_and_wait_to_clear(0, CPSW_CPDMA_SOFT_RESET);
+}
+
+static void cpsw_sl1_softreset(void)
+{
+	/* MAC SOFTRESET */
+	printf("Resetting MAC ...\n");
+	set_and_wait_to_clear(0, CPSW_SL1_SOFT_RESET);
 }
 
 static void cpsw_mdio_init(void)
@@ -41,8 +46,12 @@ static void cpsw_mdio_init(void)
 static void cpsw_ale_init(void)
 {
 	printf("COnfiguring ALE\n");
+
 	__read_and_write(1, CPSW_ALE_CONTROL_ALE_ENABLE_BIT, CPSW_ALE_CONTROL);
 	__read_and_write(1, CPSW_ALE_CONTROL_ALE_TABLE_CLEAR_BIT, CPSW_ALE_CONTROL);
+
+	/* Flood unknown unicast packets to host port */
+	__read_and_write(1, CPSW_ALE_CONTROL_EN_P0_UNI_FLOOD_BIT, CPSW_ALE_CONTROL);
 
 	/* Enable PORT Statistics */
 	writel((1 << CPSW_SS_STAT_PORT_EN_P0_STAT_EN_BIT) | (1 << CPSW_SS_STAT_PORT_EN_P1_STAT_EN_BIT) | (1 << CPSW_SS_STAT_PORT_EN_P2_STAT_EN_BIT), CPSW_SS_STAT_PORT_EN);
@@ -64,25 +73,6 @@ static void cpsw_set_mac(void)
 	mac_hi = readl(CPSW_PORT_P1_SA_HI);
 
 	printf("MAC addr = %02x:%02x:%02x:%02x:%02x:%02x\n", mac_hi & 0xff, (mac_hi >> 8) & 0xff, (mac_hi >> 16) & 0xff, (mac_hi >> 24) & 0xff, (mac_lo) & 0xff, (mac_lo >> 8) & 0xff);
-}
-
-static void cpsw_ss_softreset(void)
-{
-	printf("Resetting CPSW_SS ...\n");
-	set_and_wait_to_clear(0, CPSW_SS_SOFT_RESET);
-}
-
-static void cpsw_cpdma_softreset(void)
-{
-	printf("Resetting CPSW_CPDMA ...\n");
-	set_and_wait_to_clear(0, CPSW_CPDMA_SOFT_RESET);
-}
-
-static void cpsw_sl1_softreset(void)
-{
-	/* MAC SOFTRESET */
-	printf("Resetting MAC ...\n");
-	set_and_wait_to_clear(0, CPSW_SL1_SOFT_RESET);
 }
 
 static void cpsw_write_rx_hdp(void *desc)
@@ -190,6 +180,8 @@ static int cpsw_irq(int irq, void *data)
 {
 	struct cpsw_priv *priv = data;
 
+	writel(0, CPSW_WR_C0_RX_EN);
+
 	if (irq == CPSW_3PGSWRXINT0) {
 		printf("RX_PULSE interrupt received irq number = 0x%x\n", irq);
 
@@ -201,6 +193,8 @@ static int cpsw_irq(int irq, void *data)
 		/* End of Interrput vector is 1 for RX_PULSE interrupt */
 		writel(CPSW_CPDMA_EOI_VECTOR_RX_PULSE, CPSW_CPDMA_EOI_VECTOR);
 	}
+
+	writel(1, CPSW_WR_C0_RX_EN);
 
 	return 0;
 
@@ -238,8 +232,6 @@ int cpsw_init(void)
 	cpsw_mdio_init();
 
 	cpsw_ale_init();
-
-	__read_and_write(1, 8, CPSW_ALE_CONTROL);
 
 	/* MAC CPSW_RX_MAXLEN set to 0x5ee */
 	writel(CPSW_RX_MAX_PKT_LEN, CPSW_SL1_RX_MAXLEN);
