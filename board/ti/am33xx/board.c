@@ -134,7 +134,9 @@ extern void tmp_putc1(int *, char);
 #ifdef DDR
     ddr_init();
 #endif
+#ifdef NET
     cpsw_init();
+#endif
 #ifdef SERIAL_UART
 
 #ifdef SHELL

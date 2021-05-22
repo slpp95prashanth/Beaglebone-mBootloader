@@ -3,6 +3,8 @@
 #include <net/lib.h>
 #include <net/ip.h>
 
+#ifdef NET
+
 void print_ipv4_header(void *buf)
 {
 	struct iphdr *ip = (struct iphdr *)buf;
@@ -36,3 +38,5 @@ void print_ipv4_header(void *buf)
 	printf("dest ip addr = 0x(%02x.%02x.%02x.%02x)\n", ip->daddr[0], ip->daddr[1], ip->daddr[2], ip->daddr[3]);
 	printf("\n-------------- ip header ---------------------\n");
 }
+
+#endif /* NET */

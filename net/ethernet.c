@@ -5,6 +5,8 @@
 #include <net/debug.h>
 #include <net/ethernet.h>
 
+#ifdef NET
+
 void print_mac_address(unsigned char *mac)
 {
 	int i;
@@ -61,3 +63,5 @@ void ethernet_input(char *pkt, uint32_t len)
 	}
 
 }
+
+#endif /* NET */

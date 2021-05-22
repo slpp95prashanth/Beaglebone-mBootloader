@@ -105,8 +105,10 @@ void shell_start(void)
 		} else if (CMD_CMP(cmd, "gpio") == (0)) {
 			ret = do_gpio(argc, argv);
 #endif /* GPIO && SHELL_GPIO */
+#ifdef NET
 		} else if (CMD_CMP(cmd, "ethstats") == (0)) {
 			do_eth_stats();
+#endif /* NET */
 		} else if (CMD_CMP(cmd, "help") == (0) || CMD_CMP(cmd, "?") == (0)) {
 			do_help();
 		} else {

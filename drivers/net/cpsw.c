@@ -12,6 +12,8 @@
 #define MAC_ADDR_LO	(0x6785)
 #define MAC_ADDR_HI	(0x94ff3500)
 
+#ifdef NET
+
 static void cpsw_configure_ctrl_module(void)
 {
 	printf("Configuring Control Module\n");
@@ -313,3 +315,4 @@ int cpsw_init(void)
 	return 0;
 }
 
+#endif /* NET */

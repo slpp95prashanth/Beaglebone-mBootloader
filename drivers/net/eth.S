@@ -1,6 +1,9 @@
 //
 // ethernet routines
 //
+
+#ifdef NET
+
 .syntax unified
 .data
 CPSW_MII_SEL_MODE          = 0x00
@@ -126,3 +129,5 @@ eth_init_exit:
 read_reg:
     ldr	r0, [r0, 0x0]
     bx lr
+
+#endif /* NET */

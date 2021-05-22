@@ -119,8 +119,9 @@ int do_mm(int argc, char *argv[])
 
 int do_gpio(int argc, char **argv)
 {
+#ifdef NET
 	cpsw_send(NULL, 0);
-
+#endif
 	return 0;
 
 	if (argc != 3) {

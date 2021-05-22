@@ -4,6 +4,8 @@
 #include <net/arp.h>
 #include <net/debug.h>
 
+#ifdef NET
+
 void print_arp_header(void *buf)
 {
 	struct arphdr *arp = buf;
@@ -41,3 +43,5 @@ void print_arp_header(void *buf)
 	
 	printf("\n----------------------------------------------\n");
 }
+
+#endif /* NET */
