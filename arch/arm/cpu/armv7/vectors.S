@@ -123,6 +123,16 @@ cpu_irq_init:
     pop	{r6}
     mov	pc, lr
 
+.globl cpu_disable_intr
+cpu_disable_intr:
+    push {r6}
+    mrs	r6, cpsr
+    orr r6, r6, #0x00000080		    @ disable I bit for irq to be triggered
+#    ldr r6, =0x60000113
+    msr	cpsr, r6
+    pop	{r6}
+    mov	pc, lr
+
 .globl cpu_irq_init_pre_mode_spsr
 cpu_irq_init_pre_mode_spsr:
     push {r6}

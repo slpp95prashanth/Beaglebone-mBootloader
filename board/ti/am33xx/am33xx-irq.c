@@ -13,7 +13,7 @@ static struct irq_handlers handlers[MAX_IRQS + 1];
 
 void disable_irq(void)
 {
-    return ;
+	cpu_disable_intr();
 }
 
 void enable_irq(void)
