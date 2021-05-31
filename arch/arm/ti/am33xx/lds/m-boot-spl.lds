@@ -17,10 +17,10 @@ SECTIONS
 
  .bss :
   {
-    __bss_start = .;
+    _BSS_START_ = .;
     *(.bss*)
     . = ALIGN(4);
-    __bss_end__ = .;
+    _BSS_END_ = .;
   } >.sram
 
  . = ALIGN(4);

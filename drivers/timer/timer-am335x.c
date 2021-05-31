@@ -9,46 +9,126 @@
 
 #ifdef TIMER
 
-
-void timer_init(int irq, void *secs)
-{
 #if defined(EXCEPTION) && defined(IRQ)
-    int loader;
 
-    /* ACK interrupt */
-    writel(OVF_EN_FLAG, AM335X_DMTIMER0_IRQSTATUS);
+static struct timer _timer[MAX_TIMER_IN_USE];
 
-#ifdef GPIO
+static int __count = 0;
 
-    gpio_direction_out(USER_LED0);
+void request_timer(struct timer *data)
+{
+	if (data == NULL || data->func == NULL || data->usecs < DEFAULT_TIMER_USECS) {
+		printf("invalid struct timer members\n");
+		return ;
+	}
 
-    if (gpio_get(USER_LED0) == (1)) {
-	gpio_clear(USER_LED0);
-    } else {
-	gpio_set(USER_LED0);
-    }
+	if (__count >= MAX_TIMER_IN_USE) {
+		printf("reached max timer registered functions\n");
+		return;
+	}
 
-#endif /* GPIO */
+	_timer[__count].usecs = data->usecs;
+	_timer[__count].func = data->func;
 
-    loader = (unsigned int)0xffffffff - ((int)AM335X_DMTIMER0_CLK * (int)secs);
-
-    writel(loader, AM335X_DMTIMER0_TLDR);
-    writel(loader, AM335X_DMTIMER0_TCRR);
-
-    writel(OVF_EN_FLAG, AM335X_DMTIMER0_IRQENABLE_SET);
-
-    writel(START_TIMER | AUTO_RELOAD | TRIGGER_ON_OVERFLOW, AM335X_DMTIMER0_TLCR);
-
-#endif /* EXCEPTION && IRQ */
-
-    return ;
+	__count++;
 }
 
-#if defined(EXCEPTION) && defined(IRQ)
+void timer_init(int irq, void *usecs)
+{
+	unsigned int loader;
+	int i, ret = 0;
+
+	/* ACK interrupt */
+	writel(OVF_EN_FLAG, AM335X_DMTIMER0_IRQSTATUS);
+
+	for (i = 0; i <= __count; i++) {
+		_timer[i].usecs -= DEFAULT_TIMER_USECS;
+
+		if (_timer[i].usecs <= 0 && _timer[i].func != NULL) {
+			ret = _timer[i].func(NULL);
+
+			if (ret != TIMER_STOP) {
+				_timer[i].usecs = ret;
+			}
+		}
+	}
+
+#ifdef TIMER_GPIO_DEBUG
+
+	gpio_direction_out(USER_LED0);
+
+	if (gpio_get(USER_LED0) == (1)) {
+		gpio_clear(USER_LED0);
+	} else {
+		gpio_set(USER_LED0);
+	}
+
+#endif /* TIMER_GPIO_DEBUG */
+
+	/* Required fplib */
+//	loader = (unsigned int)(0xffffffff - ((float)AM335X_DMTIMER0_CLK * ((float)(*(unsigned int *)usecs) / 1000000)));
+
+	/* 10 ms timer */
+	loader = 0xfffffec0;
+
+	writel(loader, AM335X_DMTIMER0_TLDR);
+	writel(loader, AM335X_DMTIMER0_TCRR);
+
+	writel(OVF_EN_FLAG, AM335X_DMTIMER0_IRQENABLE_SET);
+
+
+	return ;
+}
+
+#if TIMER_DEBUG
+
+int print_40ms(void *data)
+{
+	printf("1ms\n");
+	return 40000;
+}
+
+int print_20ms(void *data)
+{
+	printf("2ms\n");
+	return 20000;
+}
+
+int print_30ms(void *data)
+{
+	printf("3ms\n");
+	return 30000;
+}
+
+#endif
 
 void timer_irq_init(void)
 {
-    request_irq(TIMER0_INTR, (int (*)(int, void *))timer_init, (void *)2);
+	struct timer data;
+	timer_init(0, NULL);
+
+#if TIMER_DEBUG
+	data.usecs = 20000;
+	data.func = print_20ms;
+	printf("print_1ms %08x\n", print_20ms);
+	request_timer(&data);
+	printf("__count = %x line = %x\n", __count, __LINE__);
+	data.usecs = 30000;
+	data.func = print_30ms;
+	printf("print_1ms %08x\n", print_30ms);
+	request_timer(&data);
+	printf("__count = %x line = %x\n", __count, __LINE__);
+
+	data.usecs = 40000;
+	data.func = print_40ms;
+
+	printf("print_1ms %08x\n", print_40ms);
+	request_timer(&data);
+	printf("__count = %x line = %x\n", __count, __LINE__);
+#endif
+	request_irq(TIMER0_INTR, (int (*)(int, void *))timer_init, (void *)DEFAULT_TIMER_USECS);
+
+	writel(START_TIMER | AUTO_RELOAD | TRIGGER_ON_OVERFLOW, AM335X_DMTIMER0_TLCR);
 }
 
 #endif /* EXCEPTION && IRQ */

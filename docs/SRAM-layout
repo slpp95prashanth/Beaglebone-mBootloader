@@ -6,5 +6,5 @@ SRAM info:
 SRAM layout:
 ===========
 	+ MLO 0x402f_0400 size 0x57c
-	+ sp  0x402f_1fff (down growing stack)
+	+ sp  0x402f_ffff (down growing stack = higher address to lower address)
  

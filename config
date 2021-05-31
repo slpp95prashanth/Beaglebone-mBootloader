@@ -24,7 +24,7 @@ CONFIG_IRQ=y
 #
 # Drivers
 #
-# CONFIG_TIMER is not set
+CONFIG_TIMER=y
 
 #
 # GPIO

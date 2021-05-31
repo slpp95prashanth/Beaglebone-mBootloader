@@ -128,7 +128,7 @@ extern void tmp_putc1(int *, char);
 #endif
 
 #ifdef TIMER
-    timer_init(0, (void *)(2));
+//    timer_init(0, (void *)(DEFAULT_TIMER_USECS));
 #endif
 
 #ifdef DDR
@@ -150,8 +150,22 @@ extern void tmp_putc1(int *, char);
     return;
 }
 
+void clear_bss_section(void)
+{
+	extern unsigned int _BSS_START_[], _BSS_END_[];
+
+	unsigned int *bss_start = _BSS_START_;
+	unsigned int *bss_end = _BSS_END_;
+
+	int i;
+
+	for (i = 0; bss_start < bss_end; i++) {
+		*bss_start = 0;
+		bss_start++;
+	}
+}
 void board_init_f(ulong dummy)
 {
-    early_system_init();
-    return;
+	clear_bss_section();
+	early_system_init();
 }
