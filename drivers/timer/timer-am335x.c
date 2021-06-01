@@ -75,28 +75,24 @@ void timer_init(int irq, void *usecs)
 	writel(loader, AM335X_DMTIMER0_TCRR);
 
 	writel(OVF_EN_FLAG, AM335X_DMTIMER0_IRQENABLE_SET);
-
-
-	return ;
 }
 
 #if TIMER_DEBUG
-
-int print_40ms(void *data)
+int print_10ms(void *data)
 {
-	printf("1ms\n");
+	printf("10ms\n");
 	return 40000;
 }
 
 int print_20ms(void *data)
 {
-	printf("2ms\n");
+	printf("20ms\n");
 	return 20000;
 }
 
 int print_30ms(void *data)
 {
-	printf("3ms\n");
+	printf("30ms\n");
 	return 30000;
 }
 
@@ -104,28 +100,24 @@ int print_30ms(void *data)
 
 void timer_irq_init(void)
 {
-	struct timer data;
 	timer_init(0, NULL);
 
+	struct timer data;
 #if TIMER_DEBUG
 	data.usecs = 20000;
 	data.func = print_20ms;
-	printf("print_1ms %08x\n", print_20ms);
 	request_timer(&data);
 	printf("__count = %x line = %x\n", __count, __LINE__);
 	data.usecs = 30000;
 	data.func = print_30ms;
-	printf("print_1ms %08x\n", print_30ms);
 	request_timer(&data);
 	printf("__count = %x line = %x\n", __count, __LINE__);
-
-	data.usecs = 40000;
-	data.func = print_40ms;
-
-	printf("print_1ms %08x\n", print_40ms);
+	data.usecs = 10000;
+	data.func = print_10ms;
 	request_timer(&data);
 	printf("__count = %x line = %x\n", __count, __LINE__);
 #endif
+
 	request_irq(TIMER0_INTR, (int (*)(int, void *))timer_init, (void *)DEFAULT_TIMER_USECS);
 
 	writel(START_TIMER | AUTO_RELOAD | TRIGGER_ON_OVERFLOW, AM335X_DMTIMER0_TLCR);

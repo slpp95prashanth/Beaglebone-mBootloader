@@ -9,12 +9,12 @@
 
 void irq_init(void)
 {
-    cpu_irq_init();
+	cpu_enable_intr();
 #ifdef GPIO
-    gpio_irq_init();
+	gpio_irq_init();
 #endif
 #ifdef TIMER
-    timer_irq_init();
+	timer_irq_init();
 #endif
     return ;
 }

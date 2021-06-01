@@ -113,8 +113,8 @@ set_exception_vectors:
         mcr     p15, 0, r0, c12, c0, 0  @Set VBAR
         mov pc, lr
 
-.globl cpu_irq_init
-cpu_irq_init:
+.globl cpu_enable_intr
+cpu_enable_intr:
     push {r6}
     mrs	r6, cpsr
     bic r6, r6, #0x00000080		    @ disable I bit for irq to be triggered

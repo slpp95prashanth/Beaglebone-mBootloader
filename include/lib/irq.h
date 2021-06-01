@@ -8,7 +8,6 @@ void enable_irq(void);
 void disable_irq(void);
 int get_irq(void);
 
-void cpu_irq_init(void);
 void gpio_irq_init(void);
 
 #endif /* _LIB_IRQ */

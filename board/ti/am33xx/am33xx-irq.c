@@ -18,15 +18,13 @@ void disable_irq(void)
 
 void enable_irq(void)
 {
-#define ENABLE_NEW_IRQ 0x1
+	writel(ENABLE_NEW_IRQ, AM335X_INTC_CONTROL);
 
-    writel(ENABLE_NEW_IRQ, AM335X_INTC_CONTROL);
+	cpu_irq_init_pre_mode_spsr();
 
-    cpu_irq_init_pre_mode_spsr();
+	__asm(" dsb");
 
-    __asm(" dsb");
-
-    return ;
+	cpu_enable_intr();
 }
 
 int get_irq(void)
@@ -51,12 +49,6 @@ int asm_request_irq(int irq, int (*handler)(int, void *), void *data)
     addr = (uint32_t *)mir[off];
 
     writel(readl(addr) & ~(1 << index), addr);
-
-#ifdef IRQ_DEFAULT_HANDLER
-    if (handler == NULL) {
-	handlers[irq].handler = default_handler;
-    }
-#endif
 
 #if defined(DEBUG_PRINTF) && defined(DEBUG_IRQ)
     printf("handlers %p ", irq);
@@ -96,11 +88,11 @@ int asm_request_free(int irq)
 
 int asm_handlers(int irq)
 { 
-    if (handlers[irq].handler != (NULL)) {
-	handlers[irq].handler((irq), handlers[irq].data);
-    }	
+	if (handlers[irq].handler != (NULL)) {
+		return handlers[irq].handler((irq), handlers[irq].data);
+	}	
 
-    return -1;
+	return -1;
 }
 
 #endif /* IRQ */

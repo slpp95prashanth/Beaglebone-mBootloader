@@ -14,6 +14,8 @@
 #define AM335X_GPIO0_INTR   96
 #define AM335X_GPIO1_INTR   98
 
+#define ENABLE_NEW_IRQ 0x1
+
 #define MAX_IRQS 127
 
 struct irq_handlers {
