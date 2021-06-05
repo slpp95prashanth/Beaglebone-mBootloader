@@ -108,6 +108,8 @@ void shell_start(void)
 #ifdef NET
 		} else if (CMD_CMP(cmd, "ethstats") == (0)) {
 			do_eth_stats();
+		} else if (CMD_CMP(cmd, "intr") == (0)) {
+			do_intr(argc, argv);
 #endif /* NET */
 		} else if (CMD_CMP(cmd, "help") == (0) || CMD_CMP(cmd, "?") == (0)) {
 			do_help();

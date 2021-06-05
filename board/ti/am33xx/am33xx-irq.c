@@ -9,7 +9,9 @@
 
 #ifdef IRQ
 
-static struct irq_handlers handlers[MAX_IRQS + 1];
+static struct irq_handlers handlers[MAX_IRQS_COUNT];
+
+static uint64_t _irq_count[MAX_IRQS_COUNT];
 
 void disable_irq(void)
 {
@@ -87,13 +89,45 @@ int asm_request_free(int irq)
 }
 
 int asm_handlers(int irq)
-{ 
+{
 	if (handlers[irq].handler != (NULL)) {
+
+		_irq_count[irq]++;
+
 		return handlers[irq].handler((irq), handlers[irq].data);
-	}	
+	}
 
 	return -1;
 }
 
+void print_irq_count(void)
+{
+	int i;
+
+	printf("irq  count\n");
+
+	for (i = 0; i < MAX_IRQS_COUNT; i++) {
+		if (_irq_count[i] != 0) {
+			printf("%02x  %016llx\n", i, _irq_count[i]);
+		}
+	}
+}
+
+void print_irq_enabled(void)
+{
+	int i, j;
+
+	uint32_t mir[] = {AM335X_INTC_MIR0, AM335X_INTC_MIR1, AM335X_INTC_MIR2, AM335X_INTC_MIR3};
+
+	printf("irq\n");
+
+	for (i = 0; i < 4; i++) {
+		for (j = 0; j < 32; j++) {
+			if (((readl(mir[i]) >> j) & 0x1) == 0) {
+				printf("%02x\n", j + i *32);
+			}
+		}
+	}
+}
 #endif /* IRQ */
 #endif /* EXCEPTION */

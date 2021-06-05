@@ -12,6 +12,8 @@
 #define MAC_ADDR_LO	(0x6785)
 #define MAC_ADDR_HI	(0x94ff3500)
 
+//#define CPSW_IRQ
+
 #ifdef NET
 
 static void cpsw_configure_ctrl_module(void)
@@ -79,7 +81,7 @@ static void cpsw_set_mac(void)
 
 static void cpsw_write_rx_hdp(void *desc)
 {
-	printf("Write RX head desc pointer  = %08x\n", desc);
+	//printf("Write RX head desc pointer  = %08x\n", desc);
 	writel((unsigned int)desc, CPSW_STATERAM_RX0_HDP);
 }
 
@@ -152,10 +154,10 @@ static void cpsw_check_dma_status(void)
 {
 	int cpsw_dma_status = readl(CPSW_CPDMA_DMASTATUS);
 
-	printf("DMASTATUS = %08x\n", cpsw_dma_status);
+	//printf("DMASTATUS = %08x\n", cpsw_dma_status);
 
 	if (cpsw_dma_status & CPSW_CPDMA_DMASTATUS_IDLE) {
-		printf("DMA Idle\n");
+		//printf("DMA Idle\n");
 		return ;
 	}
 
@@ -208,21 +210,22 @@ static void cpsw_recv(struct cpsw_priv *priv)
 
 	rx_desc = priv->rx_desc;
 
-	printf("Waiting for packet to receive ...\n");
-	printf("flags = %08x\n", rx_desc->flags_pktlen);
+	//printf("Waiting for packet to receive ...\n");
+	//printf("flags = %08x\n", rx_desc->flags_pktlen);
 
-	while (rx_desc->flags_pktlen & CPSW_DESC_OWNERSHIP_DMA);
+	if (rx_desc->flags_pktlen & CPSW_DESC_OWNERSHIP_DMA)
+		return;
 
-	printf("Rx frames = %08x\n", readl(CPSW_STATS));
-	printf("pkt_len = %08x\n", rx_desc->flags_pktlen & CPSW_DESC_PKT_LEN_MASK);
+	//printf("Rx frames = %08x\n", readl(CPSW_STATS));
+	//printf("pkt_len = %08x\n", rx_desc->flags_pktlen & CPSW_DESC_PKT_LEN_MASK);
 
 	pkt_len = rx_desc->flags_pktlen & CPSW_DESC_PKT_LEN_MASK;
 
 	cpsw_check_dma_status();
 
-	print_packet((void *)rx_desc->bufptr, pkt_len);
+	//print_packet((void *)rx_desc->bufptr, pkt_len);
 
-	ethernet_input((char *)rx_desc->bufptr, pkt_len);
+	//ethernet_input((char *)rx_desc->bufptr, pkt_len);
 
 	memset((void *)rx_desc->bufptr, '\0', pkt_len);
 
@@ -232,6 +235,8 @@ static void cpsw_recv(struct cpsw_priv *priv)
 	cpsw_write_rx_hdp(rx_desc);
 }
 
+#ifdef CPSW_IRQ
+
 static int cpsw_irq(int irq, void *data)
 {
 	struct cpsw_priv *priv = data;
@@ -239,7 +244,7 @@ static int cpsw_irq(int irq, void *data)
 	writel(0, CPSW_WR_C0_RX_EN);
 
 	if (irq == CPSW_3PGSWRXINT0) {
-		printf("RX_PULSE interrupt received irq number = 0x%x\n", irq);
+		//printf("RX_PULSE interrupt received irq number = 0x%x\n", irq);
 
 		cpsw_recv(priv);
 
@@ -255,6 +260,36 @@ static int cpsw_irq(int irq, void *data)
 	return 0;
 
 }
+
+#else
+
+static struct cpsw_priv *data;
+
+static int cpsw_poll(void)
+{
+	struct cpsw_priv *priv = data;
+
+	writel(0, CPSW_WR_C0_RX_EN);
+
+	printf("CHECK for any packets\n");
+
+	cpsw_recv(priv);
+
+	/* ACK the DMA processed descriptor by writing the descriptor address to completion pointer */
+	writel(CPSW_CPPI_RAM, CPSW_STATERAM_RX0_CP);
+
+	/* End of Interrput vector is 1 for RX_PULSE interrupt */
+	writel(CPSW_CPDMA_EOI_VECTOR_RX_PULSE, CPSW_CPDMA_EOI_VECTOR);
+
+	writel(1, CPSW_WR_C0_RX_EN);
+
+	return 100000;
+
+}
+
+#endif
+
+#ifdef CPSW_IRQ
 
 static void cpsw_enable_rx_int(void)
 {
@@ -273,9 +308,15 @@ static void cpsw_register_rx_int(struct cpsw_priv *priv)
 	cpsw_enable_rx_int();
 }
 
+#endif
+
 int cpsw_init(void)
 {
 	static struct cpsw_priv priv;
+
+#ifndef CPSW_IRQ
+	data = &priv;
+#endif
 
 	priv.rx_desc = (void *)CPSW_CPPI_RAM;
 	priv.tx_desc = (void *)CPSW_CPPI_RAM + sizeof(struct desc) * 12;
@@ -306,9 +347,13 @@ int cpsw_init(void)
 	cpsw_write_rx_hdp(priv.rx_desc);
 	/* Write TX desc pointer */
 	cpsw_write_tx_hdp(priv.tx_desc);
-
+#ifdef CPSW_IRQ
 	cpsw_register_rx_int(&priv);
-
+#else
+#include <timer/timer.h>
+	struct timer timer = {100000, cpsw_poll};
+	request_timer(&timer);
+#endif
 	cpsw_cpdma_enable_tx();
 	cpsw_cpdma_enable_rx();
 

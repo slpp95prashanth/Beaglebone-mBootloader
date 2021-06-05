@@ -180,3 +180,18 @@ int do_reset(int argc, char *argv[])
 	return 0;
 }
 #endif /* SHELL_RESET */
+
+void do_intr(int argc, char *argv[])
+{
+	if (argc == 1) {
+		print_irq_enabled();
+		print_irq_count();
+	} else if (argc == 2) {
+		if (strncmp(argv[1], "enable", 6) == 0) {
+			enable_irq();
+		} else if (strncmp(argv[1], "disable", 7) == 0) {
+			disable_irq();
+		}
+	}
+}
+

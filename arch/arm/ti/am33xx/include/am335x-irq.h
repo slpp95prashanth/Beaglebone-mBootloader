@@ -16,7 +16,7 @@
 
 #define ENABLE_NEW_IRQ 0x1
 
-#define MAX_IRQS 127
+#define MAX_IRQS_COUNT 128
 
 struct irq_handlers {
     int (*handler)(int, void *);
