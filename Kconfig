@@ -27,10 +27,4 @@ menu "NET"
 config NET
     bool "net"
     default y
-
-config NET_UIP
-	depends on NET
-	bool "uIP"
-	default y
-
 endmenu

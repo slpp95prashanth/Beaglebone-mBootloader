@@ -29,9 +29,6 @@ LDS:=arch/$(ARCH)/$(BOARD)/$(SOC)/lds/m-boot-spl.lds
 #LIBS_PATH:= -L /usr/lib/gcc-cross/$(CROSS_COMPILE:-=)/4.7
 #LIBS:=-lgcc
 
-ifdef CONFIG_NET_UIP
-LIBS += -L ./uip/ -luip
-endif
 mBOOT_REPOSITORY = $(shell pwd)
 
 DIR:=$(mBOOT_REPOSITORY)
@@ -54,9 +51,6 @@ OBJS:=$(patsubst %.S,%.o,$(OBJS))
 	$(CC) $(CFLAGS) $(INCDIR) -c $< -o $@
 
 MLO: ${OBJS} .config
-ifdef CONFIG_NET_UIP
-	make -C uip/
-endif
 	$(LD) -T $(LDS) $(LDFLAGS) -Ttext $(EADDR) $(OBJS) $(LIBS_PATH) $(LIBS) -Map u-boot-spl.map -o u-boot-spl
 	$(OBJCOPY) --gap-fill=0xff -O binary u-boot-spl u-boot-spl.bin
 	$(DIR)/tools/mkimage -T omapimage -a $(EADDR) -d u-boot-spl.bin MLO
@@ -77,7 +71,6 @@ cleanall:
 	-rm *.o *~ .*~
 	-rm MLO u-boot-spl u-boot-spl.bin u-boot-spl.map
 	-make -C scripts/ distclean
-	-make -C uip clean
 
 menuconfig:
 	make -C scripts/ menuconfig

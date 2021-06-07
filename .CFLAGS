@@ -60,10 +60,6 @@ ifdef CONFIG_NET
 CFLAGS+=-DNET
 endif
 
-ifdef CONFIG_NET_UIP
-CFLAGS+=-DNET_UIP
-endif
-
 ifdef CONFIG_IRQ
 CFLAGS+=-DIRQ
 endif
