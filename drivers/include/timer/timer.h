@@ -17,4 +17,11 @@ struct timer {
 
 #define DEFAULT_TIMER_USECS	(10000)
 
+extern uint32_t time_of_day(void *);
+
+struct timeval {
+	uint64_t tv_sec;
+	uint64_t tv_usec;
+};
+
 #endif /* _TIMER_ */

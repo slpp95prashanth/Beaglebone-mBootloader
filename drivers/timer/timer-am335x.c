@@ -102,7 +102,9 @@ void timer_irq_init(void)
 {
 	timer_init(0, NULL);
 
-	struct timer data;
+	struct timer data = {10000, time_of_day};
+
+	request_timer(&data);
 #if TIMER_DEBUG
 	data.usecs = 20000;
 	data.func = print_20ms;
@@ -121,6 +123,30 @@ void timer_irq_init(void)
 	request_irq(TIMER0_INTR, (int (*)(int, void *))timer_init, (void *)DEFAULT_TIMER_USECS);
 
 	writel(START_TIMER | AUTO_RELOAD | TRIGGER_ON_OVERFLOW, AM335X_DMTIMER0_TLCR);
+}
+
+static struct timeval time;
+
+uint32_t time_of_day(void *data)
+{
+	static uint32_t usecs;
+
+	usecs += DEFAULT_TIMER_USECS;
+
+	time.tv_usec += DEFAULT_TIMER_USECS;
+
+	if (usecs >= 1000000) {
+		time.tv_sec += 1;
+		usecs = 0;
+	}
+
+	return DEFAULT_TIMER_USECS;
+}
+
+void gettimeofday(struct timeval *utime)
+{
+	utime->tv_sec = time.tv_sec;
+	utime->tv_usec = time.tv_usec;
 }
 
 #endif /* EXCEPTION && IRQ */

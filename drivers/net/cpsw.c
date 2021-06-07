@@ -271,7 +271,7 @@ static int cpsw_poll(void)
 
 	writel(0, CPSW_WR_C0_RX_EN);
 
-	printf("CHECK for any packets\n");
+	//printf("CHECK for any packets\n");
 
 	cpsw_recv(priv);
 

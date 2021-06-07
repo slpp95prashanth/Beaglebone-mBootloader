@@ -15,6 +15,8 @@ char cmds[][MAX_CMD_LEN] = {	\
 		"ethstats",	\
 		"gpio",	\
 		"reset",	\
+		"time",	\
+		"intr",	\
 		""
 		};
 
@@ -110,6 +112,8 @@ void shell_start(void)
 			do_eth_stats();
 		} else if (CMD_CMP(cmd, "intr") == (0)) {
 			do_intr(argc, argv);
+		} else if (CMD_CMP(cmd, "time") == (0)) {
+			do_time(argc, argv);
 #endif /* NET */
 		} else if (CMD_CMP(cmd, "help") == (0) || CMD_CMP(cmd, "?") == (0)) {
 			do_help();

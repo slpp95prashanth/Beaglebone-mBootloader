@@ -195,3 +195,7 @@ void do_intr(int argc, char *argv[])
 	}
 }
 
+void do_time(int argc, char *argv[])
+{
+	system_uptime();
+}

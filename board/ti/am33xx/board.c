@@ -98,56 +98,45 @@ void dev_clk_enable(void)
 
 void early_system_init(void)
 {
-        /*
-         * The ROM will only have set up sufficient pinmux to allow for the
-         * first 4KiB NOR to be read, we must finish doing what we know of
-         * the NOR mux in this space in order to continue.
-         */
-//    cache_disable(1<<2);
-    watchdog_disable();
+	/*
+	 * The ROM will only have set up sufficient pinmux to allow for the
+	 * first 4KiB NOR to be read, we must finish doing what we know of
+	 * the NOR mux in this space in order to continue.
+	 */
+	watchdog_disable();
 
-    config_ctrl_module();
+	config_ctrl_module();
 
-    dev_clk_enable();
+	dev_clk_enable();
 #ifdef SERIAL_UART
-    uart_console_init();
+	uart_console_init();
 
 #ifdef DEBUG_PRINTF
 extern void tmp_putc1(int *, char);
-//void (*tmp_putc)(int *, char) = &tmp_putc1;
-    init_printf(0, &tmp_putc1);
+	init_printf(0, &tmp_putc1);
 #endif /* DEBUG_PRINTF */
 
 #endif /* SERIAL_UART */
-#ifdef EXCEPTION
-    asm_exception();
 
-#ifdef IRQ
-    irq_init();
-#endif
-#endif
-
-#ifdef TIMER
-//    timer_init(0, (void *)(DEFAULT_TIMER_USECS));
-#endif
+#ifdef EXCEPTION && defined(IRQ)
+	asm_exception();
+	irq_init();
+#endif /* EXCEPTION && IRQ */
 
 #ifdef DDR
-    ddr_init();
+	ddr_init();
 #endif
+
 #ifdef NET
-    cpsw_init();
+	cpsw_init();
 #endif
-#ifdef SERIAL_UART
 
-#ifdef SHELL
-    shell_start();
+#ifdef SERIAL_UART && defined(SHELL)
+	shell_start();
 #else
-    while(1);
-#endif
-
-#endif /* SERIAL_UART */
-
-    return;
+	while(1);
+#endif /* SERIAL_UART && SHELL */
+	return;
 }
 
 void clear_bss_section(void)
@@ -164,6 +153,7 @@ void clear_bss_section(void)
 		bss_start++;
 	}
 }
+
 void board_init_f(ulong dummy)
 {
 	clear_bss_section();
