@@ -8,7 +8,7 @@ void timer_init(int, void *);
 
 struct timer {
 	uint32_t usecs;
-	int (*func)(void *);
+	uint32_t (*func)(void *);
 };
 
 #define MAX_TIMER_IN_USE	(5)
@@ -23,5 +23,9 @@ struct timeval {
 	uint64_t tv_sec;
 	uint64_t tv_usec;
 };
+
+void request_timer(struct timer *);
+
+void gettimeofday(struct timeval *);
 
 #endif /* _TIMER_ */

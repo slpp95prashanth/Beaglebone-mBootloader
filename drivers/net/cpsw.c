@@ -8,6 +8,7 @@
 #include <net/cpsw-stats.h>
 #include <net/debug.h>
 #include <net/net.h>
+#include <net/lib.h>
 
 #define MAC_ADDR_LO	(0x6785)
 #define MAC_ADDR_HI	(0x94ff3500)
@@ -265,7 +266,7 @@ static int cpsw_irq(int irq, void *data)
 
 static struct cpsw_priv *data;
 
-static int cpsw_poll(void)
+static uint32_t cpsw_poll(void *arg)
 {
 	struct cpsw_priv *priv = data;
 

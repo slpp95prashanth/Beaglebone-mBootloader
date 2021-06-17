@@ -16,6 +16,8 @@ int do_regdump(int argc, char *argv[]);
 int do_reset(int argc, char *argv[]);
 int do_eth_stats(void);
 int do_gpio(int argc, char *argv[]);
+int do_intr(int argc, char *argv[]);
+int do_time(int argc, char *argv[]);
 
 
 

@@ -118,7 +118,7 @@ extern void tmp_putc1(int *, char);
 
 #endif /* SERIAL_UART */
 
-#ifdef EXCEPTION && defined(IRQ)
+#if EXCEPTION && defined(IRQ)
 	asm_exception();
 	irq_init();
 #endif /* EXCEPTION && IRQ */
@@ -131,7 +131,7 @@ extern void tmp_putc1(int *, char);
 	cpsw_init();
 #endif
 
-#ifdef SERIAL_UART && defined(SHELL)
+#if SERIAL_UART && defined(SHELL)
 	shell_start();
 #else
 	while(1);
