@@ -88,7 +88,7 @@ void dev_clk_enable(void)
     gpio_clock_enable();
 #endif
 #ifdef TIMER
-    timer_clock_enable();
+//    timer_clock_enable();
 #endif
 #ifdef DDR
     enable_emif_clocks();
@@ -132,13 +132,13 @@ extern void tmp_putc1(int *, char);
 #endif
 
 #ifdef DDR
-    ddr_init();
+    //ddr_init();
 #endif
 #ifdef NET
-    cpsw_init();
+    //cpsw_init();
 #endif
 #ifdef SERIAL_UART
-
+printf("shell start\n");
 #ifdef SHELL
     shell_start();
 #else

@@ -5,8 +5,16 @@
 #include <asm/io.h>
 #include <gpio/gpio.h>
 #include <asm/prcm.h>
+#include <lib/irq.h>
 
 int check_address_validity(char *);
+
+int raise(void)
+{
+	printf("*** raise ***\n");
+
+	while (1);
+}
 
 #ifdef SHELL_REGDUMP
 
@@ -34,6 +42,11 @@ int do_regdump(int argc, char *argv[])
 
 int do_md(int argc, char *argv[])
 {
+
+	dcan_init();
+
+	return 0;
+
 	if (argc != 2) {
 		puts("syntax: md <address>\n");
 		return -1;
@@ -120,6 +133,7 @@ int do_mm(int argc, char *argv[])
 int do_gpio(int argc, char **argv)
 {
 #ifdef NET
+	extern void cpsw_send(char *, uint32_t);
 	cpsw_send(NULL, 0);
 #endif
 	return 0;
@@ -181,17 +195,31 @@ int do_reset(int argc, char *argv[])
 }
 #endif /* SHELL_RESET */
 
-void do_intr(int argc, char *argv[])
+int do_intr(int argc, char *argv[])
 {
 	if (argc == 1) {
 		print_irq_enabled();
 		print_irq_count();
+
+		return 0;
 	} else if (argc == 2) {
 		if (strncmp(argv[1], "enable", 6) == 0) {
 			enable_irq();
 		} else if (strncmp(argv[1], "disable", 7) == 0) {
 			disable_irq();
 		}
+
+		return 0;
 	}
+
+	return -1;
 }
 
+extern void system_uptime(void);
+
+int do_time(int argc, char *argv[])
+{
+	//system_uptime();
+
+	return 0;
+}

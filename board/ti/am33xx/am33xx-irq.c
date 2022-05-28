@@ -61,6 +61,7 @@ int asm_request_irq(int irq, int (*handler)(int, void *), void *data)
     handlers[irq].handler = handler;
     handlers[irq].data = data;
 
+    printf("%s %d\n", __FILE__, __LINE__);
     return 0;
 }
 

@@ -57,6 +57,7 @@ void shell_start(void)
 		while (ch != '\r' || ch != '\n') {
 			ch = getc();
 			putc(ch);
+printf("shell start\n");
 
 			if (ch == '\b') {
 				BACKSPACE;
@@ -71,7 +72,7 @@ void shell_start(void)
 				cmd[i] = '\0';
 				break;
 			} else if (ch == '\t') {		/* tab completion */
-				cmd_tab_completion(cmd, i);
+				//cmd_tab_completion(cmd, i);
 			} else {
 				cmd[i++] = ch;
 			}
@@ -84,6 +85,7 @@ void shell_start(void)
 		while (argv[argc] != (NULL)) {
 			argv[++argc] = strtok(NULL, " ");
 		}
+printf("shell start\n");
 
 		if (CMD_CMP(cmd, "regdump") == (0)) {
 #ifdef SHELL_REGDUMP

@@ -14,7 +14,7 @@ void irq_init(void)
 	gpio_irq_init();
 #endif
 #ifdef TIMER
-	timer_irq_init();
+	//timer_irq_init();
 #endif
     return ;
 }

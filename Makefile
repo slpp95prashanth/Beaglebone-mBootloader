@@ -1,7 +1,7 @@
 ARCH:=arm
 BOARD:=ti
 SOC:=am33xx
-CROSS_COMPILE:=arm-linux-gnueabi-
+CROSS_COMPILE:=arm-none-eabi-
 export DIR:= $(shell pwd)/
 
 include .config
@@ -11,14 +11,14 @@ export CC:=$(CROSS_COMPILE)gcc -g
 LD:=$(CROSS_COMPILE)ld.bfd
 OBJCOPY:=$(CROSS_COMPILE)objcopy
 
-export CFLAGS+= -fno-builtin -fno-stack-protector -Wall -nostdinc -Os -mcpu=cortex-a8
+export CFLAGS+= -fno-builtin -fno-stack-protector -Wall -Os -mcpu=cortex-a8
 
 ifeq ($(DEBUG), 1)
 CFLAGS+= -g
 endif
 
 # GNU Linker
-LDFLAGS:=-Bstatic -nostartfiles -nostdlib
+LDFLAGS:=-Bstatic -lgcc
 
 # Entry Address
 EADDR:=0x402F0400
@@ -27,11 +27,9 @@ EADDR:=0x402F0400
 LDS:=arch/$(ARCH)/$(BOARD)/$(SOC)/lds/m-boot-spl.lds
 
 #LIBS_PATH:= -L /usr/lib/gcc-cross/$(CROSS_COMPILE:-=)/4.7
-#LIBS:=-lgcc
+LIBS:=-lgcc
 
-ifdef CONFIG_NET_UIP
-LIBS += -L ./uip/ -luip
-endif
+LIBS_PATH:= -L /usr/lib/gcc-cross/arm-linux-gnueabi/9/
 mBOOT_REPOSITORY = $(shell pwd)
 
 DIR:=$(mBOOT_REPOSITORY)
@@ -46,7 +44,7 @@ OBJS:=$(patsubst %.S,%.o,$(OBJS))
 #	$(CC) $(CFLAGS) -c $(FILES) -o $<
 
 %.o: %.c
-	$(CC) $(CFLAGS) $(INCDIR) -c $< -o $@
+	$(CC) $(LIBS_PATH) $(LIBS) $(CFLAGS) $(INCDIR) -c $< -o $@
 
 # To remove the Implicit rule
 
@@ -54,9 +52,6 @@ OBJS:=$(patsubst %.S,%.o,$(OBJS))
 	$(CC) $(CFLAGS) $(INCDIR) -c $< -o $@
 
 MLO: ${OBJS} .config
-ifdef CONFIG_NET_UIP
-	make -C uip/
-endif
 	$(LD) -T $(LDS) $(LDFLAGS) -Ttext $(EADDR) $(OBJS) $(LIBS_PATH) $(LIBS) -Map u-boot-spl.map -o u-boot-spl
 	$(OBJCOPY) --gap-fill=0xff -O binary u-boot-spl u-boot-spl.bin
 	$(DIR)/tools/mkimage -T omapimage -a $(EADDR) -d u-boot-spl.bin MLO
@@ -77,7 +72,6 @@ cleanall:
 	-rm *.o *~ .*~
 	-rm MLO u-boot-spl u-boot-spl.bin u-boot-spl.map
 	-make -C scripts/ distclean
-	-make -C uip clean
 
 menuconfig:
 	make -C scripts/ menuconfig

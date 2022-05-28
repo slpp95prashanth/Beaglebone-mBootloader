@@ -1,0 +1,3 @@
+Header p8:
+41 -> GND
+GPIO2_9 -> GND
