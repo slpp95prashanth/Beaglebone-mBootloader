@@ -34,8 +34,9 @@
 #define DCAN1_IF1DATB	(SOC_DCAN_1_REGS + 0X114)
 #define DCAN1_IF2DATB	(SOC_DCAN_1_REGS + 0X134)
 
-#define DCAN1_TXRQ(n)   (SOC_DCAN_1_REGS + 0x88 + (n * 4))
-#define DCAN1_MSGVAL(n)   (SOC_DCAN_1_REGS + 0xC4 + (n * 4))            
+#define DCAN1_TXRQ(n)   	(SOC_DCAN_1_REGS + 0x88 + (n * 4))
+#define DCAN1_MSGVAL(n)   	(SOC_DCAN_1_REGS + 0xC4 + (n * 4))            
+#define DCAN1_IFMSK(n)		(SOC_DCAN_1_REGS + 0x104 + (((n) - 1) * 0x20))          
 
 #define DCAN1_IFARB(n)	(n == 1 ? DCAN1_IF1ARB : DCAN1_IF2ARB)
 #define DCAN1_IFCMD(n)	(n == 1 ? DCAN1_IF1CMD : DCAN1_IF2CMD)
@@ -234,7 +235,7 @@ void dcan_set_id(unsigned int id, unsigned int id_len, unsigned int ifreg_num)
 	while (dcan_ifreg_busy_status(ifreg_num) == 1);
 
 	/* Set the Msk field with the ID value */
-	write(DCAN1_IFARB(ifreg_num), read(DCAN1_IFARB(ifreg_num)) | ((id & DCAN_IFARB_MSK) | (id_len | DCAN_IFARB_XTD)));
+	write(DCAN1_IFARB(ifreg_num), read(DCAN1_IFARB(ifreg_num)) | ((id & DCAN_IFARB_MSK) | (id_len & DCAN_IFARB_XTD)));
 }
 
 #define DCAN_IFARB_TX_DIR	(0x20000000u)
@@ -254,7 +255,7 @@ void dcan_set_dir_rx(unsigned int ifreg_num)
 {
       while (dcan_ifreg_busy_status(ifreg_num) == 1);
 
-	write(DCAN1_IFARB(ifreg_num), read(DCAN1_IFARB(ifreg_num)) & ~DCAN_IFARB_TX_DIR);
+	write(DCAN1_IFARB(ifreg_num), read(DCAN1_IFARB(ifreg_num)) & (~DCAN_IFARB_TX_DIR));
 }
 
 void dcan_set_dlc(unsigned int dlc, unsigned int ifreg_num)
@@ -375,11 +376,31 @@ unsigned int dcan_get_msgobj_valid_status(unsigned int msgobj_num)
 	return(read(DCAN1_MSGVAL(regNum)) & (1 << offSet));
 }
 
+#define DCAN_IFMSK_MXTD   (0x80000000u)
+
+void dcan_set_accept_mask(unsigned int ifreg_num)
+{
+	write(DCAN1_IFMCTL(ifreg_num), read(DCAN1_IFMCTL(ifreg_num)) | DCAN_IFMCTL_UMASK);
+}
+
+void dcan_config_mask_msgobj(unsigned int id_mask, unsigned int msg_dir, unsigned int ext_id, unsigned int ifreg_num)
+{
+      while (dcan_ifreg_busy_status(ifreg_num) == 1);
+
+	write(DCAN1_IFMSK(ifreg_num), read(DCAN1_IFMSK(ifreg_num)) | id_mask | msg_dir | ext_id);
+}
+
 void dcan_config_msgobj_rx(unsigned int id, unsigned int id_len)
 {
-	unsigned int msgobj_num = (64 / 2);
+	unsigned int msgobj_num = (CAN_NUM_OF_MSG_OBJS / 2);
 
 	printf("rx msgnum = %x\n", msgobj_num);
+
+	/* Use Acceptance mask. */
+	dcan_set_accept_mask(2);
+
+	/* Configure the DCAN mask registers for acceptance filtering. */
+	dcan_config_mask_msgobj(0, 0, 0/*DCAN_IFMSK_MXTD*/, 2);
 
 	dcan_validate_message_obj(2);
 
@@ -392,17 +413,22 @@ void dcan_config_msgobj_rx(unsigned int id, unsigned int id_len)
 	dcan_set_eob(2);
 
 	/* Check for the message valid status for receive objects */
-	while((msgobj_num <= (CAN_NUM_OF_MSG_OBJS - 1))) {
-		if (dcan_get_msgobj_valid_status(msgobj_num)) {
-			dcan_set_cmd_reg(DCAN_IFCMD_DATAA | DCAN_IFCMD_WR_RD |
-                               DCAN_IFCMD_MASK | DCAN_IFCMD_CONTROL | DCAN_IFCMD_ARB, msgobj_num, 2);
+	while(dcan_get_msgobj_valid_status(msgobj_num) && (msgobj_num <= (CAN_NUM_OF_MSG_OBJS - 1))) {
+/*		if (!dcan_get_msgobj_valid_status(msgobj_num)) {
+			dcan_set_cmd_reg(DCAN_IFCMD_WR_RD | DCAN_IFCMD_MASK | DCAN_IFCMD_CONTROL 
+					| DCAN_IFCMD_ARB, msgobj_num, 2);
 
-			printf("rx msgnum = %x\n", msgobj_num);
 		} else {
 			printf("rx msgobj_num skip = %x\n", msgobj_num);
 		}
+*/
 		msgobj_num++;
 	}
+
+	printf("rx msgnum = %x\n", msgobj_num);
+
+	dcan_set_cmd_reg(DCAN_IFCMD_WR_RD | DCAN_IFCMD_MASK | DCAN_IFCMD_CONTROL 
+					| DCAN_IFCMD_ARB, msgobj_num, 2);
 
 }
 
@@ -446,7 +472,7 @@ void dcan_intr(void)
 
 	printf("intr\n");
 
-	while (dcan_get_int_line_status(DCAN_INT_INT0ID) == 1) {
+	while (dcan_get_int_line_status(DCAN_INT_INT0ID) != 0) {
 
 		status = dcan_get_int_line_status(DCAN_INT_INT0ID);
 
@@ -456,12 +482,12 @@ void dcan_intr(void)
 			unsigned int msgobj_num = status;
 
 			if (msgobj_num < (CAN_NUM_OF_MSG_OBJS / 2)) {
-				printf("tx intr for msgobj_num = %d\n", msgobj_num);
+				printf("tx intr for msgobj_num = %x\n", msgobj_num);
 
 				/* Clear the Interrupt pending status */
 				dcan_clear_int_status_msgobj(msgobj_num, 1);
 			} else {
-				printf("rx intr for msgobj_num = %d\n", msgobj_num);
+				printf("rx intr for msgobj_num = %x\n", msgobj_num);
 
                         /* Clear the Interrupt pending status */
                         dcan_clear_int_status_msgobj(msgobj_num, 1);
@@ -506,6 +532,7 @@ int dcan_init(void)
 		dcan_set_cmd_reg((DCAN_IFCMD_ARB | DCAN_IFCMD_WR_RD), index, 2);
 	}
 
+	dcan_config_msgobj_rx(0, DCAN_29_BIT_ID);
 	dcan_config_msgobj_rx(0, DCAN_11_BIT_ID);
 
 	dcan_set_auto_bus_on();
@@ -522,5 +549,6 @@ int dcan_init(void)
 
 	unsigned int data[2] = {(unsigned int)('a' | 'b' << 8), (unsigned int)'c'};
 
-	dcan_config_msgobj_tx(data, 2, CAN_TX_MSG_STD_ID, DCAN_11_BIT_ID);
+	dcan_config_msgobj_tx(data, 2, CAN_TX_MSG_STD_ID, DCAN_29_BIT_ID);
+	dcan_config_msgobj_tx(data, 0, CAN_TX_MSG_STD_ID, DCAN_11_BIT_ID);
 }
