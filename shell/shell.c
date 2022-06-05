@@ -57,7 +57,6 @@ void shell_start(void)
 		while (ch != '\r' || ch != '\n') {
 			ch = getc();
 			putc(ch);
-printf("shell start\n");
 
 			if (ch == '\b') {
 				BACKSPACE;
@@ -72,7 +71,7 @@ printf("shell start\n");
 				cmd[i] = '\0';
 				break;
 			} else if (ch == '\t') {		/* tab completion */
-				//cmd_tab_completion(cmd, i);
+				cmd_tab_completion(cmd, i);
 			} else {
 				cmd[i++] = ch;
 			}
@@ -85,7 +84,6 @@ printf("shell start\n");
 		while (argv[argc] != (NULL)) {
 			argv[++argc] = strtok(NULL, " ");
 		}
-printf("shell start\n");
 
 		if (CMD_CMP(cmd, "regdump") == (0)) {
 #ifdef SHELL_REGDUMP
@@ -116,7 +114,7 @@ printf("shell start\n");
 		} else if (CMD_CMP(cmd, "help") == (0) || CMD_CMP(cmd, "?") == (0)) {
 			do_help();
 		} else {
-	    	puts("unknown command\n");
+	    		puts("unknown command\n");
 		}
 
 		if (ret < 0) {

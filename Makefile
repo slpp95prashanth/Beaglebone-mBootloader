@@ -1,7 +1,7 @@
 ARCH:=arm
 BOARD:=ti
 SOC:=am33xx
-CROSS_COMPILE:=arm-none-eabi-
+CROSS_COMPILE:=arm-linux-gnueabi-
 export DIR:= $(shell pwd)/
 
 include .config
